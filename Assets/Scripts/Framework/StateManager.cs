@@ -40,5 +40,10 @@ namespace Framework
             State = state;
             listeners.ForEach(x => x.OnStateChanged(state));
         }
+
+        public void ToggleState()
+        {
+            SetState(State == State.Paused ? State.Running : State.Paused);
+        }
     }
 }

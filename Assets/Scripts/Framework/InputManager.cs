@@ -27,6 +27,8 @@ namespace Framework
         RightTrigger,
         LeftBumper,
         RightBumper,
+        Pause,
+        Jump,
     }
 
     // The type of action
@@ -104,7 +106,7 @@ namespace Framework
     }
 
     // Maps bindings to an input
-    public abstract class InputMap
+    public abstract class InputMap : MonoBehaviour
     {
         public event EventHandler<InputActionEvent> Trigger;
 
