@@ -1,6 +1,8 @@
 using UnityEngine;
 using UnityEngine.Assertions;
 using Framework;
+using Framework.Components;
+using System.Collections.Generic;
 
 public class TrackingCamera2D : MonoBehaviour
 {
@@ -13,11 +15,20 @@ public class TrackingCamera2D : MonoBehaviour
     private Vector2 _lerp;
 
     private Camera _camera;
+    private ScreenShake _screenShake;
+    private List<ScreenEffect> _screenEffects;
 
     private void Awake()
     {
         _camera = GetComponent<Camera>();
         Assert.IsNotNull(_camera);
+
+        _screenEffects = new List<ScreenEffect>();
+
+        _screenShake = AddScreenEffect<ScreenShake>();
+        _screenShake.Duration = 4f;
+        _screenShake.Frequency = 0.01f;
+        _screenShake.Amplitude = 1f;
 
         if (_initialTarget != null)
             _trackingTarget = _initialTarget;
@@ -38,10 +49,27 @@ public class TrackingCamera2D : MonoBehaviour
 
         // Set position ignoring Z.
         _camera.transform.position = new Vector3(_lerp.x, _lerp.y, _camera.transform.position.z);
+
+        _screenEffects.ForEach(x => x.ProcessEffect());
+    }
+
+    public T AddScreenEffect<T>() where T : ScreenEffect
+    {
+        var effect = gameObject.AddComponent<T>();
+        _screenEffects.Add(effect);
+        return effect;
     }
 
     public void SetTarget(GameObject target)
     {
         _trackingTarget = target;
+    }
+
+    public void LateUpdate()
+    {
+        if (Input.GetKeyDown(KeyCode.F))
+        {
+            _screenShake.Shake();
+        }
     }
 }
