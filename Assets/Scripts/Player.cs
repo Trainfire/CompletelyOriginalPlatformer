@@ -26,7 +26,7 @@ public class Player : MonoBehaviour, IInputHandler
 
     private void PlayerController_Landed(PlayerController.LandEventArgs landEvent)
     {
-        if (landEvent.Velocity > 5f)
+        if (Mathf.Abs(landEvent.Velocity) > 10f)
         {
             _landEffect = _game.Camera.AddScreenEffect<ScreenShake>();
             _landEffect.Amplitude = Mathf.Abs(landEvent.Velocity) / 100f;
