@@ -619,6 +619,7 @@ GameObject:
   - 92: {fileID: 244434853}
   - 124: {fileID: 244434852}
   - 81: {fileID: 244434851}
+  - 114: {fileID: 244434856}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -693,6 +694,20 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1771890385}
   m_RootOrder: 1
+--- !u!114 &244434856
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 244434850}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fee2aaa29ca437048b4ecd3a4df6439f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _initialTarget: {fileID: 448796353}
+  _moveSpeed: 0.05
+  _offset: {x: 0, y: 64}
 --- !u!1 &283885000
 GameObject:
   m_ObjectHideFlags: 0
@@ -1254,8 +1269,8 @@ Rigidbody2D:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 448796353}
-  m_UseAutoMass: 1
-  m_Mass: 0.2304
+  m_UseAutoMass: 0
+  m_Mass: 0.3136
   m_LinearDrag: 0
   m_AngularDrag: 0.05
   m_GravityScale: 1
@@ -1307,7 +1322,7 @@ BoxCollider2D:
   m_UsedByEffector: 0
   m_Offset: {x: 0, y: 0}
   serializedVersion: 2
-  m_Size: {x: 0.12, y: 0.12}
+  m_Size: {x: 0.14, y: 0.14}
 --- !u!114 &448796358
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1322,7 +1337,7 @@ MonoBehaviour:
   _hAccelRate: 32
   _hDeaccelRate: 64
   _hMaxSpeed: 4
-  _vForce: 150
+  _vForce: 100
   _worldMask:
     serializedVersion: 2
     m_Bits: 256

@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System;
 using System.Collections.Generic;
 using Framework;
@@ -36,6 +36,7 @@ public class Game : MonoBehaviour, IInputHandler, IStateListener
         // Setup
         _player = FindObjectOfType<Player>();
         Assert.IsNotNull(_player, "A GameObject with the Player component must exist somewhere in the scene.");
+        _player.InputEnabled = true;
 
         _world = FindObjectOfType<World>();
         Assert.IsNotNull(_world, "A GameObject with the World component must exist somewhere in the scene.");

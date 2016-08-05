@@ -1,12 +1,19 @@
 using UnityEngine;
-using System.Collections;
+using UnityEngine.Assertions;
 using Framework;
-using System;
 
 public class World : MonoBehaviour
 {
-    public void Update()
+    private TrackingCamera2D _camera;
+
+    public TrackingCamera2D Camera
     {
-        
+        get { return _camera; }
+    }
+
+    private void Awake()
+    {
+        _camera = FindObjectOfType<TrackingCamera2D>();
+        Assert.IsNotNull(_camera, "Failed to find a GameObject with the TrackingCamera2D component.");
     }
 }
