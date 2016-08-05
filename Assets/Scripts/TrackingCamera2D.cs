@@ -15,7 +15,6 @@ public class TrackingCamera2D : MonoBehaviour
     private Vector2 _lerp;
 
     private Camera _camera;
-    private ScreenShake _screenShake;
     private List<ScreenEffect> _screenEffects;
 
     private void Awake()
@@ -24,11 +23,6 @@ public class TrackingCamera2D : MonoBehaviour
         Assert.IsNotNull(_camera);
 
         _screenEffects = new List<ScreenEffect>();
-
-        _screenShake = AddScreenEffect<ScreenShake>();
-        _screenShake.Duration = 4f;
-        _screenShake.Frequency = 0.01f;
-        _screenShake.Amplitude = 1f;
 
         if (_initialTarget != null)
             _trackingTarget = _initialTarget;
@@ -56,20 +50,24 @@ public class TrackingCamera2D : MonoBehaviour
     public T AddScreenEffect<T>() where T : ScreenEffect
     {
         var effect = gameObject.AddComponent<T>();
+        effect.Finished += ScreenEffect_Finished;
         _screenEffects.Add(effect);
         return effect;
+    }
+
+    private void ScreenEffect_Finished(ScreenEffect screenEffect)
+    {
+        Assert.IsTrue(_screenEffects.Contains(screenEffect));
+
+        if (_screenEffects.Contains(screenEffect))
+        {
+            _screenEffects.Remove(screenEffect);
+            Destroy(screenEffect);
+        }
     }
 
     public void SetTarget(GameObject target)
     {
         _trackingTarget = target;
-    }
-
-    public void LateUpdate()
-    {
-        if (Input.GetKeyDown(KeyCode.F))
-        {
-            _screenShake.Shake();
-        }
     }
 }

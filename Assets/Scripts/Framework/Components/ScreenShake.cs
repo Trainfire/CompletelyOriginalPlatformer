@@ -6,8 +6,6 @@ namespace Framework.Components
 {
     public class ScreenShake : ScreenEffect
     {
-        public event Action<ScreenShake> Finished;
-
         public float Frequency;
         public float Amplitude;
         public float Duration;
@@ -20,12 +18,19 @@ namespace Framework.Components
         public Vector3 Offset { get; private set; }
         public bool Shaking { get; private set; }
 
-        public void Shake()
+        public override void Activate()
         {
             _startTime = Time.realtimeSinceStartup;
             _shakeTime = 0f;
             _shakeAmplitude = Amplitude;
             Shaking = true;
+        }
+
+        public override void Deactivate()
+        {
+            Shaking = false;
+            Offset = Vector2.zero;
+            OnFinish();
         }
 
         private void OnTick()
@@ -50,11 +55,7 @@ namespace Framework.Components
 
                 if (Time.realtimeSinceStartup > _startTime + Duration)
                 {
-                    Shaking = false;
-                    Offset = Vector2.zero;
-
-                    if (Finished != null)
-                        Finished(this);
+                    Deactivate();
                 }
                 else if (Time.realtimeSinceStartup > _lastTickTime + Frequency)
                 {

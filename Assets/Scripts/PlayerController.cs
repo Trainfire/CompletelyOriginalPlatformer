@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using Framework;
 using System.Collections;
 using System;
@@ -6,6 +6,17 @@ using System;
 public class PlayerController : MonoBehaviour, IInputHandler
 {
     // TODO: Expose events here for the animator to hook into.
+    public event Action<LandEventArgs> Landed;
+
+    public class LandEventArgs : EventArgs
+    {
+        public float Velocity { get; private set; }
+
+        public LandEventArgs(float velocity)
+        {
+            Velocity = velocity;
+        }
+    }
 
     [SerializeField] private float _hAccelRate;
     [SerializeField] private float _hDeaccelRate;
@@ -15,17 +26,25 @@ public class PlayerController : MonoBehaviour, IInputHandler
 
     private Rigidbody2D _rigidBody;
     private Collider2D _collider;
+
+    private Vector3 _cachedVelocity;
     private float _hAccel;
     private float _hVelocity;
     private Vector2 _facingDirection;
 
-    private bool _grounded;
+    private bool _isGrounded;
+    private bool _wasGrounded;
     private bool _blocked;
 
     public void Awake()
     {
         _rigidBody = GetComponent<Rigidbody2D>();
         _collider = GetComponent<Collider2D>();
+    }
+
+    private Vector2 Ground
+    {
+        get { return _collider.bounds.extents.x / 2f * Vector2.down; }
     }
 
     public void HandleInput(InputActionEvent action)
@@ -57,8 +76,11 @@ public class PlayerController : MonoBehaviour, IInputHandler
 
     private void FixedUpdate()
     {
-        _grounded = Physics2D.OverlapCircle(transform.position.ToVec2() + (_collider.bounds.extents.y / 2f * Vector2.down), _collider.bounds.extents.y, _worldMask);
+        _isGrounded = Physics2D.OverlapCircle(transform.position.ToVec2() + (_collider.bounds.extents.y / 2f * Vector2.down), _collider.bounds.extents.y, _worldMask);
         _blocked = Physics2D.OverlapCircle(transform.position.ToVec2() + (_collider.bounds.extents.x / 2f * _facingDirection), _collider.bounds.extents.x, _worldMask);
+
+        if (_wasGrounded == false && _isGrounded == true && Landed != null)
+            Landed(new LandEventArgs(_cachedVelocity.y));
 
         // Horizontal Acceleration
         if (Mathf.Abs(_facingDirection.x) > 0f && !_blocked)
@@ -87,13 +109,21 @@ public class PlayerController : MonoBehaviour, IInputHandler
         }
 
         _rigidBody.velocity = new Vector2(_hVelocity, _rigidBody.velocity.y);
+
+        _wasGrounded = _isGrounded;
+        _cachedVelocity = _rigidBody.velocity;
+    }
+
+    private void OnLanded()
+    {
+        
     }
 
     private void Jump()
     {
-        if (_grounded)
+        if (_isGrounded)
         {
-            _grounded = false;
+            _isGrounded = false;
             _rigidBody.AddForce(Vector2.up * _vForce);
         }
     }
