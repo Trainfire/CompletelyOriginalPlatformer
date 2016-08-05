@@ -22,6 +22,14 @@ namespace Framework
         }
     }
 
+    static class Vector3Ex
+    {
+        public static Vector2 ToVec2(this Vector3 v)
+        {
+            return new Vector2(v.x, v.y);
+        }
+    }
+
     static class GameObjectEx
     {
         public static T GetComponent<T>(this GameObject obj, Action<T> onGet)

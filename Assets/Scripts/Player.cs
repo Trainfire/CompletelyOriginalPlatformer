@@ -1,15 +1,19 @@
-﻿using UnityEngine;
+using UnityEngine;
 using Framework;
 using System.Collections;
 using System;
+using UnityEngine.Assertions;
 
 public class Player : MonoBehaviour, IInputHandler
 {
     public bool InputEnabled { get; set; }
 
+    private PlayerController _playerController;
+
     public void Awake()
     {
-        InputEnabled = true;
+        _playerController = GetComponent<PlayerController>();
+        Assert.IsNotNull(_playerController, "PlayerController is missing! Make sure the player has a PlayerController attached.");
     }
 
     public void HandleInput(InputActionEvent action)
@@ -17,6 +21,6 @@ public class Player : MonoBehaviour, IInputHandler
         if (!InputEnabled)
             return;
 
-        Debug.LogFormat("Received input: {0}", action.Action);
+        _playerController.HandleInput(action);
     }
 }
