@@ -10,6 +10,11 @@ public class GameEntity : MonoBehaviourEx, IGameEntity
 {
     protected Game Game { get; private set; }
 
+    public int InstanceID
+    {
+        get { return GetInstanceID(); }
+    }
+
     public void Initialize(Game game)
     {
         Game = game;

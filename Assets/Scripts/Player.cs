@@ -4,7 +4,7 @@ using Framework;
 using Framework.Components;
 using System;
 
-public class Player : GameEntity, IInputHandler, IStateHandler
+public class Player : GameEntity, IInputHandler
 {
     public bool InputEnabled { get; set; }
 
@@ -22,12 +22,11 @@ public class Player : GameEntity, IInputHandler, IStateHandler
 
         InputManager.RegisterHandler(this);
         InputEnabled = true;
-
-        Game.StateListener.StateChanged += StateListener_StateChanged;
     }
 
-    private void StateListener_StateChanged(State state)
+    protected override void OnStateChanged(State state)
     {
+        base.OnStateChanged(state);
         InputEnabled = state == State.Running;
         _playerController.enabled = state == State.Running;
     }
@@ -46,7 +45,9 @@ public class Player : GameEntity, IInputHandler, IStateHandler
 
     protected override void OnDestroy()
     {
+        base.OnDestroy();
         InputManager.UnregisterHandler(this);
+        _playerController.Landed -= PlayerController_Landed;
     }
 
     void IInputHandler.HandleInput(InputActionEvent action)
@@ -55,11 +56,5 @@ public class Player : GameEntity, IInputHandler, IStateHandler
             return;
 
         _playerController.HandleInput(action);
-    }
-
-    void IStateHandler.OnStateChanged(State state)
-    {
-        InputEnabled = state == State.Running;
-        _playerController.Enabled = state == State.Running;
     }
 }
