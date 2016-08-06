@@ -1,4 +1,4 @@
-using System.Collections;
+using System;
 using System.Collections.Generic;
 
 namespace Framework
@@ -14,36 +14,37 @@ namespace Framework
         void OnStateChanged(State state);
     }
 
-    public class StateManager
+    public class StateManager 
     {
-        private List<IStateHandler> listeners;
+        private IStateHandler _handler;
 
         public State State { get; private set; }
 
-        public StateManager()
+        public StateManager(IStateHandler handler)
         {
-            listeners = new List<IStateHandler>();
-        }
-
-        public void RegisterListener(IStateHandler listener)
-        {
-            listeners.Add(listener);
-        }
-
-        public void UnregisterListener(IStateHandler listener)
-        {
-            listeners.Remove(listener);
+            _handler = handler;
         }
 
         public void SetState(State state)
         {
             State = state;
-            listeners.ForEach(x => x.OnStateChanged(state));
+            _handler.OnStateChanged(State);
         }
 
         public void ToggleState()
         {
             SetState(State == State.Paused ? State.Running : State.Paused);
+        }
+    }
+
+    public class StateListener : IStateHandler
+    {
+        public event Action<State> StateChanged;
+
+        void IStateHandler.OnStateChanged(State state)
+        {
+            if (StateChanged != null)
+                StateChanged(state);
         }
     }
 }

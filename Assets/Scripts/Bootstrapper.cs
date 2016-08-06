@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 using UnityEngine.Assertions;
 using Framework;
@@ -13,6 +13,10 @@ public class Bootstrapper : MonoBehaviour
 
     public void Awake()
     {
+        var existingBootstrapper = FindObjectOfType<Bootstrapper>();
+        if (existingBootstrapper != null && existingBootstrapper != this)
+            Destroy(gameObject);
+
         _relay = gameObject.GetOrAddComponent<MonoEventRelay>();
     }
 
