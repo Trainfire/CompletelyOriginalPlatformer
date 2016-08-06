@@ -15,7 +15,7 @@ public class GameEntity : MonoBehaviourEx, IGameEntity
         get { return GetInstanceID(); }
     }
 
-    public void Initialize(Game game)
+    void IGameEntity.Initialize(Game game)
     {
         Game = game;
         Game.StateListener.StateChanged += OnStateChanged;

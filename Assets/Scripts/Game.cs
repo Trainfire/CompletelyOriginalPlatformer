@@ -54,7 +54,10 @@ public class Game : MonoBehaviour, IInputHandler
             _gameEntities.Add(gameEntity);
         }
 
-        _gameEntities.ForEach(x => x.Initialize(this));
+        _gameEntities
+            .Cast<IGameEntity>()
+            .ToList()
+            .ForEach(x => x.Initialize(this));
     }
 
     private void CleanupEntities()
