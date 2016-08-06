@@ -13,8 +13,16 @@ public class GameEntity : MonoBehaviourEx, IGameEntity
     public void Initialize(Game game)
     {
         Game = game;
+        Game.StateListener.StateChanged += OnStateChanged;
+
         OnInitialize();
     }
 
     protected virtual void OnInitialize() { }
+    protected virtual void OnStateChanged(State state) { }
+
+    protected virtual void OnDestroy()
+    {
+        Game.StateListener.StateChanged -= OnStateChanged;
+    }
 }

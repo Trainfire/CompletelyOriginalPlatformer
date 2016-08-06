@@ -1,28 +1,30 @@
 using UnityEngine;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Framework;
 using UnityEngine.Assertions;
 
 public class Game : MonoBehaviour, IInputHandler
 {
     private StateManager _stateManager;
-    private StateListener _stateListener;
     private InputMapPC _inputPC;
 
     private List<GameEntity> _gameEntities;
 
     public Data Data { get; private set; }
     public UI UI { get; private set; }
-    public TrackingCamera2D Camera { get; private set; }
+    public GameCamera Camera { get; private set; }
+    public StateListener StateListener { get; private set; }
 
     public void Initialize(Data data, UI ui)
     {
         _gameEntities = new List<GameEntity>();
 
         // State
-        _stateListener = new StateListener();
-        _stateManager = new StateManager(_stateListener);
+        StateListener = new StateListener();
+        StateListener.StateChanged += StateListener_StateChanged;
+        _stateManager = new StateManager(StateListener);
 
         // Input. TODO: Move somewhere else.
         _inputPC = gameObject.GetOrAddComponent<InputMapPC>();
@@ -36,16 +38,27 @@ public class Game : MonoBehaviour, IInputHandler
 
         Data = new Data();
         UI = GetDependency<UI>();
-        Camera = GetDependency<TrackingCamera2D>();
+        Camera = GetDependency<GameCamera>();
 
         // Level handlers
         LevelManager.LevelUnloaded += LevelManager_LevelUnloaded;
         LevelManager.LevelLoaded += LevelManager_LevelLoaded;
+
+        InitializeEntities();
     }
 
-    private void LevelManager_LevelUnloaded(LevelManager.LevelLoadEvent obj)
+    private void InitializeEntities()
     {
-        Debug.LogFormat("Level {0} was unloaded.", obj.SceneName);
+        foreach (var gameEntity in FindObjectsOfType<GameEntity>())
+        {
+            _gameEntities.Add(gameEntity);
+        }
+
+        _gameEntities.ForEach(x => x.Initialize(this));
+    }
+
+    private void CleanupEntities()
+    {
         _gameEntities.ForEach(x => Destroy(x.gameObject));
         _gameEntities.Clear();
     }
@@ -53,13 +66,33 @@ public class Game : MonoBehaviour, IInputHandler
     private void LevelManager_LevelLoaded(LevelManager.LevelLoadEvent obj)
     {
         Debug.LogFormat("Level {0} was loaded.", obj.SceneName);
+        InitializeEntities();
+    }
 
-        foreach (var gameEntity in FindObjectsOfType<GameEntity>())
+    private void LevelManager_LevelUnloaded(LevelManager.LevelLoadEvent obj)
+    {
+        Debug.LogFormat("Level {0} was unloaded.", obj.SceneName);
+        CleanupEntities();
+    }
+
+    private void StateListener_StateChanged(State state)
+    {
+        Camera.enabled = state == State.Running;
+    }
+
+    void IInputHandler.HandleInput(InputActionEvent action)
+    {
+        if (action.Action == InputAction.Pause && action.Type == InputActionType.Down)
         {
-            _gameEntities.Add(gameEntity);
+            _stateManager.ToggleState();
+            Debug.Log("Game is now " + _stateManager.State);
         }
+    }
 
-        _gameEntities.ForEach(x => x.Initialize(this));
+    void LateUpdate()
+    {
+        if (Input.GetKeyDown(KeyCode.F))
+            LevelManager.LoadLevel("main");
     }
 
     T GetDependency<T>() where T : MonoBehaviour
@@ -69,15 +102,11 @@ public class Game : MonoBehaviour, IInputHandler
         return dependency;
     }
 
-    void IInputHandler.HandleInput(InputActionEvent action)
+    T GetEntity<T>() where T : GameEntity
     {
-        if (action.Action == InputAction.Pause && action.Type == InputActionType.Down)
-            _stateManager.ToggleState();
-    }
-
-    void LateUpdate()
-    {
-        if (Input.GetKeyDown(KeyCode.F))
-            LevelManager.LoadLevel("main");
+        var matchingEntity = _gameEntities.FirstOrDefault(x => x.GetType() == typeof(T));
+        if (matchingEntity != null)
+            return matchingEntity as T;
+        return null;
     }
 }

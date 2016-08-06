@@ -22,6 +22,14 @@ public class Player : GameEntity, IInputHandler, IStateHandler
 
         InputManager.RegisterHandler(this);
         InputEnabled = true;
+
+        Game.StateListener.StateChanged += StateListener_StateChanged;
+    }
+
+    private void StateListener_StateChanged(State state)
+    {
+        InputEnabled = state == State.Running;
+        _playerController.enabled = state == State.Running;
     }
 
     private void PlayerController_Landed(PlayerController.LandEventArgs landEvent)
@@ -36,7 +44,7 @@ public class Player : GameEntity, IInputHandler, IStateHandler
         }
     }
 
-    private void OnDestroy()
+    protected override void OnDestroy()
     {
         InputManager.UnregisterHandler(this);
     }

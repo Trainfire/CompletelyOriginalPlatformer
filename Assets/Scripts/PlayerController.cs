@@ -119,6 +119,16 @@ public class PlayerController : MonoBehaviour, IInputHandler
         _cachedVelocity = _rigidBody.velocity;
     }
 
+    private void OnEnable()
+    {
+        _rigidBody.isKinematic = false;
+    }
+
+    private void OnDisable()
+    {
+        _rigidBody.isKinematic = true;
+    }
+
     private void Jump()
     {
         if (_isGrounded)

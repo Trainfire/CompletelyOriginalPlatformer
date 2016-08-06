@@ -24,7 +24,7 @@ namespace Framework
         {
             var scene = SceneManager.GetSceneByName(sceneName);
 
-            if (scene == null)
+            if (!scene.IsValid())
             {
                 Debug.LogErrorFormat("Scene '{0}' does not exist and will not be loaded.", sceneName);
                 return;
