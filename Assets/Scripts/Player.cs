@@ -4,7 +4,7 @@ using Framework;
 using Framework.Components;
 using System;
 
-public class Player : WorldEntity, IInputHandler, IStateHandler
+public class Player : GameEntity, IInputHandler, IStateHandler
 {
     public bool InputEnabled { get; set; }
 
@@ -19,6 +19,9 @@ public class Player : WorldEntity, IInputHandler, IStateHandler
         Assert.IsNotNull(_playerController, "PlayerController is missing! Make sure the player has a PlayerController attached.");
 
         _playerController.Landed += PlayerController_Landed;
+
+        InputManager.RegisterHandler(this);
+        InputEnabled = true;
     }
 
     private void PlayerController_Landed(PlayerController.LandEventArgs landEvent)
@@ -33,7 +36,12 @@ public class Player : WorldEntity, IInputHandler, IStateHandler
         }
     }
 
-    public void HandleInput(InputActionEvent action)
+    private void OnDestroy()
+    {
+        InputManager.UnregisterHandler(this);
+    }
+
+    void IInputHandler.HandleInput(InputActionEvent action)
     {
         if (!InputEnabled)
             return;

@@ -4,28 +4,27 @@ using System.Collections.Generic;
 using Framework;
 using UnityEngine.Assertions;
 
-public class Game : MonoBehaviour, IInputHandler, IStateHandler
+public class Game : MonoBehaviour, IInputHandler
 {
     private StateManager _stateManager;
+    private StateListener _stateListener;
     private InputMapPC _inputPC;
 
     private List<GameEntity> _gameEntities;
-    private List<IInputHandler> _inputHandlers;
-    private List<IStateHandler> _stateHandlers;
 
     public Data Data { get; private set; }
     public UI UI { get; private set; }
     public TrackingCamera2D Camera { get; private set; }
-    public Player Player { get; private set; }
-    public World World { get; private set; }
 
     public void Initialize(Data data, UI ui)
     {
-        // State
-        _stateManager = new StateManager();
-        _stateManager.RegisterListener(this);
+        _gameEntities = new List<GameEntity>();
 
-        // Input
+        // State
+        _stateListener = new StateListener();
+        _stateManager = new StateManager(_stateListener);
+
+        // Input. TODO: Move somewhere else.
         _inputPC = gameObject.GetOrAddComponent<InputMapPC>();
         _inputPC.AddBinding(InputAction.Pause, KeyCode.Escape);
         _inputPC.AddBinding(InputAction.Left, KeyCode.A); // Kinda need to decide how to add game-specific enums here...
@@ -35,38 +34,38 @@ public class Game : MonoBehaviour, IInputHandler, IStateHandler
         InputManager.RegisterMap(_inputPC);
         InputManager.RegisterHandler(this);
 
-        // Setup
-        _gameEntities = new List<GameEntity>();
-        _inputHandlers = new List<IInputHandler>();
-        _stateHandlers = new List<IStateHandler>();
-
         Data = new Data();
         UI = GetDependency<UI>();
-        Player = GetDependency<Player>();
-        World = GetDependency<World>();
         Camera = GetDependency<TrackingCamera2D>();
 
-        foreach (var gameEntity in _gameEntities)
-        {
-            var inputHandler = gameEntity as IInputHandler;
-            if (inputHandler != null)
-                _inputHandlers.Add(inputHandler);
+        // Level handlers
+        LevelManager.LevelUnloaded += LevelManager_LevelUnloaded;
+        LevelManager.LevelLoaded += LevelManager_LevelLoaded;
+    }
 
-            var stateHandler = gameEntity as IStateHandler;
-            if (stateHandler != null)
-                _stateHandlers.Add(stateHandler);
+    private void LevelManager_LevelUnloaded(LevelManager.LevelLoadEvent obj)
+    {
+        Debug.LogFormat("Level {0} was unloaded.", obj.SceneName);
+        _gameEntities.ForEach(x => Destroy(x.gameObject));
+        _gameEntities.Clear();
+    }
+
+    private void LevelManager_LevelLoaded(LevelManager.LevelLoadEvent obj)
+    {
+        Debug.LogFormat("Level {0} was loaded.", obj.SceneName);
+
+        foreach (var gameEntity in FindObjectsOfType<GameEntity>())
+        {
+            _gameEntities.Add(gameEntity);
         }
 
-        // Init
-        Player.InputEnabled = true;
         _gameEntities.ForEach(x => x.Initialize(this));
     }
 
-    T GetDependency<T>() where T : GameEntity
+    T GetDependency<T>() where T : MonoBehaviour
     {
         var dependency = FindObjectOfType<T>();
         Assert.IsNotNull(dependency, string.Format("A GameObject with the {0} component must exist somewhere in the scene.", typeof(T).FullName));
-        _gameEntities.Add(dependency);
         return dependency;
     }
 
@@ -74,13 +73,11 @@ public class Game : MonoBehaviour, IInputHandler, IStateHandler
     {
         if (action.Action == InputAction.Pause && action.Type == InputActionType.Down)
             _stateManager.ToggleState();
-
-        _inputHandlers.ForEach(x => x.HandleInput(action));
-
     }
 
-    void IStateHandler.OnStateChanged(State state)
+    void LateUpdate()
     {
-        _stateHandlers.ForEach(x => x.OnStateChanged(state));
+        if (Input.GetKeyDown(KeyCode.F))
+            LevelManager.LoadLevel("main");
     }
 }

@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class WorldPopup : WorldEntity
+public class WorldPopup : GameEntity
 {
     public string Content;
 

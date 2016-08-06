@@ -3,7 +3,7 @@ using Framework;
 using System.Collections;
 using System;
 
-public class PlayerController : WorldEntity, IInputHandler
+public class PlayerController : MonoBehaviour, IInputHandler
 {
     // TODO: Expose events here for the animator to hook into.
     public event Action<LandEventArgs> Landed;
@@ -36,7 +36,7 @@ public class PlayerController : WorldEntity, IInputHandler
     private bool _wasGrounded;
     private bool _blocked;
 
-    protected override void OnInitialize()
+    private void Awake()
     {
         _rigidBody = GetComponent<Rigidbody2D>();
         _collider = GetComponent<Collider2D>();
@@ -79,7 +79,7 @@ public class PlayerController : WorldEntity, IInputHandler
         }
     }
 
-    protected override void OnWorldFixedUpdate()
+    private void FixedUpdate()
     {
         _isGrounded = Physics2D.OverlapCircle(transform.position.ToVec2() + (_collider.bounds.extents.y / 2f * Vector2.down), _collider.bounds.extents.y, _worldMask);
         _blocked = Physics2D.OverlapCircle(transform.position.ToVec2() + (_collider.bounds.extents.x / 2f * _facingDirection), _collider.bounds.extents.x, _worldMask);

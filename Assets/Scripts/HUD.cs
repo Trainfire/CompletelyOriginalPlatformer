@@ -1,4 +1,5 @@
 using UnityEngine;
+using Framework;
 using Framework.UI;
 
 public class HUD : MonoBehaviour

@@ -5,7 +5,7 @@ using System.Collections;
 using Framework;
 using System;
 
-public class UI : GameEntity, IInputHandler
+public class UI : MonoBehaviourEx, IInputHandler
 {
     [SerializeField] private HUD _hud;
 
@@ -14,7 +14,7 @@ public class UI : GameEntity, IInputHandler
         get { return _hud; }
     }
 
-    protected override void OnInitialize()
+    public void Awake()
     {
         Assert.IsNotNull(HUD, "HUD is null and shouldn't be.");
     }

@@ -1436,7 +1436,6 @@ GameObject:
   serializedVersion: 4
   m_Component:
   - 4: {fileID: 1069815114}
-  - 114: {fileID: 1069815115}
   m_Layer: 0
   m_Name: World
   m_TagString: Untagged
@@ -1461,19 +1460,8 @@ Transform:
   - {fileID: 814160197}
   - {fileID: 1300398701}
   - {fileID: 662915551}
-  m_Father: {fileID: 1771890385}
-  m_RootOrder: 2
---- !u!114 &1069815115
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 1069815113}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1ffafeb3d08543a48818e1c29e75b066, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  m_Father: {fileID: 0}
+  m_RootOrder: 1
 --- !u!4 &1082732523 stripped
 Transform:
   m_PrefabParentObject: {fileID: 499166, guid: 222e81fbfc4ccbc468b40a7a4bd72ab9, type: 2}
@@ -2111,7 +2099,6 @@ Transform:
   m_Children:
   - {fileID: 488321589}
   - {fileID: 244434855}
-  - {fileID: 1069815114}
   m_Father: {fileID: 0}
   m_RootOrder: 0
 --- !u!114 &1771890386
