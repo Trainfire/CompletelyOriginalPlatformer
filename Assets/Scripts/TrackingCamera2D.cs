@@ -4,7 +4,7 @@ using Framework;
 using Framework.Components;
 using System.Collections.Generic;
 
-public class TrackingCamera2D : MonoBehaviour
+public class TrackingCamera2D : GameEntity
 {
     [SerializeField] private GameObject _initialTarget;
     [Range(0f, 1f)] [SerializeField] private float _moveSpeed;

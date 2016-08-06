@@ -9,28 +9,28 @@ namespace Framework
         Paused,
     }
 
-    public interface IStateListener
+    public interface IStateHandler
     {
         void OnStateChanged(State state);
     }
 
     public class StateManager
     {
-        private List<IStateListener> listeners;
+        private List<IStateHandler> listeners;
 
         public State State { get; private set; }
 
         public StateManager()
         {
-            listeners = new List<IStateListener>();
+            listeners = new List<IStateHandler>();
         }
 
-        public void RegisterListener(IStateListener listener)
+        public void RegisterListener(IStateHandler listener)
         {
             listeners.Add(listener);
         }
 
-        public void UnregisterListener(IStateListener listener)
+        public void UnregisterListener(IStateHandler listener)
         {
             listeners.Remove(listener);
         }

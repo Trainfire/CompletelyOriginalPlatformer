@@ -3,7 +3,7 @@ using Framework;
 using System.Collections;
 using System;
 
-public class PlayerController : MonoBehaviour, IInputHandler
+public class PlayerController : WorldEntity, IInputHandler
 {
     // TODO: Expose events here for the animator to hook into.
     public event Action<LandEventArgs> Landed;
@@ -36,10 +36,15 @@ public class PlayerController : MonoBehaviour, IInputHandler
     private bool _wasGrounded;
     private bool _blocked;
 
-    public void Awake()
+    protected override void OnInitialize()
     {
         _rigidBody = GetComponent<Rigidbody2D>();
         _collider = GetComponent<Collider2D>();
+    }
+
+    public bool Enabled
+    {
+        set { _rigidBody.isKinematic = !value; }
     }
 
     private Vector2 Ground
@@ -74,7 +79,7 @@ public class PlayerController : MonoBehaviour, IInputHandler
         }
     }
 
-    private void FixedUpdate()
+    protected override void OnWorldFixedUpdate()
     {
         _isGrounded = Physics2D.OverlapCircle(transform.position.ToVec2() + (_collider.bounds.extents.y / 2f * Vector2.down), _collider.bounds.extents.y, _worldMask);
         _blocked = Physics2D.OverlapCircle(transform.position.ToVec2() + (_collider.bounds.extents.x / 2f * _facingDirection), _collider.bounds.extents.x, _worldMask);
@@ -112,11 +117,6 @@ public class PlayerController : MonoBehaviour, IInputHandler
 
         _wasGrounded = _isGrounded;
         _cachedVelocity = _rigidBody.velocity;
-    }
-
-    private void OnLanded()
-    {
-        
     }
 
     private void Jump()

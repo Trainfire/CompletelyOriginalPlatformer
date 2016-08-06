@@ -4,23 +4,23 @@ using System.Collections.Generic;
 using Framework;
 using UnityEngine.Assertions;
 
-public class Game : MonoBehaviour, IInputHandler, IStateListener
+public class Game : MonoBehaviour, IInputHandler, IStateHandler
 {
-    private Data _data;
-    private UI _ui;
-
     private StateManager _stateManager;
     private InputMapPC _inputPC;
-    private Player _player;
-    private World _world;
 
+    private List<GameEntity> _gameEntities;
+    private List<IInputHandler> _inputHandlers;
+    private List<IStateHandler> _stateHandlers;
+
+    public Data Data { get; private set; }
+    public UI UI { get; private set; }
     public TrackingCamera2D Camera { get; private set; }
+    public Player Player { get; private set; }
+    public World World { get; private set; }
 
     public void Initialize(Data data, UI ui)
     {
-        _data = data;
-        _ui = ui;
-
         // State
         _stateManager = new StateManager();
         _stateManager.RegisterListener(this);
@@ -36,33 +36,51 @@ public class Game : MonoBehaviour, IInputHandler, IStateListener
         InputManager.RegisterHandler(this);
 
         // Setup
-        _player = FindObjectOfType<Player>();
-        Assert.IsNotNull(_player, "A GameObject with the Player component must exist somewhere in the scene.");
+        _gameEntities = new List<GameEntity>();
+        _inputHandlers = new List<IInputHandler>();
+        _stateHandlers = new List<IStateHandler>();
 
-        _world = FindObjectOfType<World>();
-        Assert.IsNotNull(_world, "A GameObject with the World component must exist somewhere in the scene.");
+        Data = new Data();
+        UI = GetDependency<UI>();
+        Player = GetDependency<Player>();
+        World = GetDependency<World>();
+        Camera = GetDependency<TrackingCamera2D>();
 
-        Camera = FindObjectOfType<TrackingCamera2D>();
-        Assert.IsNotNull(Camera, "A GameObject with the TrackingCamera2D component must exist somewhere in the scene.");
+        foreach (var gameEntity in _gameEntities)
+        {
+            var inputHandler = gameEntity as IInputHandler;
+            if (inputHandler != null)
+                _inputHandlers.Add(inputHandler);
+
+            var stateHandler = gameEntity as IStateHandler;
+            if (stateHandler != null)
+                _stateHandlers.Add(stateHandler);
+        }
 
         // Init
-        _player.InputEnabled = true;
-        _player.Initialize(this);
+        Player.InputEnabled = true;
+        _gameEntities.ForEach(x => x.Initialize(this));
+    }
+
+    T GetDependency<T>() where T : GameEntity
+    {
+        var dependency = FindObjectOfType<T>();
+        Assert.IsNotNull(dependency, string.Format("A GameObject with the {0} component must exist somewhere in the scene.", typeof(T).FullName));
+        _gameEntities.Add(dependency);
+        return dependency;
     }
 
     void IInputHandler.HandleInput(InputActionEvent action)
     {
-        _ui.HandleInput(action);
-        _player.HandleInput(action);
-
         if (action.Action == InputAction.Pause && action.Type == InputActionType.Down)
             _stateManager.ToggleState();
+
+        _inputHandlers.ForEach(x => x.HandleInput(action));
+
     }
 
-    void IStateListener.OnStateChanged(State state)
+    void IStateHandler.OnStateChanged(State state)
     {
-        _player.InputEnabled = state == State.Running;
-        _player.enabled = state == State.Running;
-        _world.enabled = state == State.Running;
+        _stateHandlers.ForEach(x => x.OnStateChanged(state));
     }
 }

@@ -2,33 +2,30 @@ using UnityEngine;
 using UnityEngine.Assertions;
 using Framework;
 using Framework.Components;
+using System;
 
-public class Player : MonoBehaviour, IInputHandler
+public class Player : WorldEntity, IInputHandler, IStateHandler
 {
     public bool InputEnabled { get; set; }
 
-    private Game _game;
     private PlayerController _playerController;
     private ScreenShake _landEffect;
 
-    public void Awake()
+    protected override void OnInitialize()
     {
+        base.OnInitialize();
+
         _playerController = GetComponent<PlayerController>();
         Assert.IsNotNull(_playerController, "PlayerController is missing! Make sure the player has a PlayerController attached.");
 
         _playerController.Landed += PlayerController_Landed;
     }
 
-    public void Initialize(Game game)
-    {
-        _game = game;
-    }
-
     private void PlayerController_Landed(PlayerController.LandEventArgs landEvent)
     {
         if (Mathf.Abs(landEvent.Velocity) > 10f)
         {
-            _landEffect = _game.Camera.AddScreenEffect<ScreenShake>();
+            _landEffect = Game.Camera.AddScreenEffect<ScreenShake>();
             _landEffect.Amplitude = Mathf.Abs(landEvent.Velocity) / 100f;
             _landEffect.Duration = 0.5f;
             _landEffect.Frequency = 0.01f;
@@ -42,5 +39,11 @@ public class Player : MonoBehaviour, IInputHandler
             return;
 
         _playerController.HandleInput(action);
+    }
+
+    void IStateHandler.OnStateChanged(State state)
+    {
+        InputEnabled = state == State.Running;
+        _playerController.Enabled = state == State.Running;
     }
 }
