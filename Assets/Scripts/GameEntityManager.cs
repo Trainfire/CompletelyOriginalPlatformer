@@ -17,10 +17,7 @@ class GameEntityManager
 
         LevelManager.LevelLoaded += LevelManager_LevelLoaded;
         LevelManager.LevelUnloaded += LevelManager_LevelUnloaded;
-    }
 
-    public void Initialize()
-    {
         InitializeEntities();
     }
 

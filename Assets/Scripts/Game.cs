@@ -21,8 +21,6 @@ public class Game : MonoBehaviour, IInputHandler
 
     public void Initialize(Data data, UI ui)
     {
-        _gameEntityManager = new GameEntityManager(this);
-
         // State
         StateListener = new StateListener();
         StateListener.StateChanged += StateListener_StateChanged;
@@ -34,21 +32,23 @@ public class Game : MonoBehaviour, IInputHandler
         ZoneManager = new ZoneManager<GameZone>(ZoneListener);
 
         // Input. TODO: Move somewhere else.
-        _inputPC = gameObject.GetOrAddComponent<InputMapPC>();
-        _inputPC.AddBinding(InputAction.Pause, KeyCode.Escape);
-        _inputPC.AddBinding(InputAction.Left, KeyCode.A); // Kinda need to decide how to add game-specific enums here...
-        _inputPC.AddBinding(InputAction.Right, KeyCode.D);
-        _inputPC.AddBinding(InputAction.Jump, KeyCode.Space);
+        //_inputPC = gameObject.GetOrAddComponent<InputMapPC>();
+        //_inputPC.AddBinding(InputAction.Pause, KeyCode.Escape);
+        //_inputPC.AddBinding(InputAction.Left, KeyCode.A); // Kinda need to decide how to add game-specific enums here...
+        //_inputPC.AddBinding(InputAction.Right, KeyCode.D);
+        //_inputPC.AddBinding(InputAction.Jump, KeyCode.Space);
 
+        _inputPC = ObjectEx.FindObjectOfType<InputMapPC>();
         InputManager.RegisterMap(_inputPC);
         InputManager.RegisterHandler(this);
 
         Data = new Data();
-        UI = GetDependency<UI>();
-        UI.Initialize(this);
-        Camera = GetDependency<GameCamera>();
+        UI = ObjectEx.FindObjectOfType<UI>();
+        Camera = ObjectEx.FindObjectOfType<GameCamera>();
 
-        _gameEntityManager.Initialize();
+        // Inject dependencies
+        _gameEntityManager = new GameEntityManager(this);
+        UI.Initialize(this);
     }
 
     private void ZoneListener_ZoneChanged(GameZone zone)
@@ -76,12 +76,5 @@ public class Game : MonoBehaviour, IInputHandler
             StateManager.ToggleState();
             Debug.Log("Game is now " + StateManager.State);
         }
-    }
-
-    T GetDependency<T>() where T : MonoBehaviour
-    {
-        var dependency = FindObjectOfType<T>();
-        Assert.IsNotNull(dependency, string.Format("A GameObject with the {0} component must exist somewhere in the scene.", typeof(T).FullName));
-        return dependency;
     }
 }

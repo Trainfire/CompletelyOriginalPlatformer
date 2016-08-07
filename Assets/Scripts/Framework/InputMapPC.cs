@@ -4,30 +4,50 @@ using System.Collections.Generic;
 
 namespace Framework
 {
+    [System.Serializable]
+    public class InputBinding
+    {
+        [SerializeField] private InputAction _action;
+        [SerializeField] private KeyCode _key;
+
+        public InputAction Action
+        {
+            get { return _action; }
+        }
+
+        public KeyCode Key
+        {
+            get { return _key; }
+        }
+    }
+
     public class InputMapPC : InputMap
     {
-        Dictionary<InputAction, KeyCode> bindings;
+        [SerializeField] private List<InputBinding> _bindings;
 
-        public InputMapPC()
+        private Dictionary<InputAction, KeyCode> _bindingsDict;
+
+        public void Awake()
         {
-            bindings = new Dictionary<InputAction, KeyCode>();
+            _bindingsDict = new Dictionary<InputAction, KeyCode>();
+            _bindings.ForEach(x => _bindingsDict.Add(x.Action, x.Key));
         }
 
         public void AddBinding(InputAction action, KeyCode key)
         {
-            if (bindings.ContainsKey(action))
+            if (_bindingsDict.ContainsKey(action))
             {
                 Debug.LogErrorFormat("InputMapPC: '{0}' is already bound to '{1}'", action, key);
             }
             else
             {
-                bindings.Add(action, key);
+                _bindingsDict.Add(action, key);
             }
         }
 
         public void LateUpdate()
         {
-            foreach (var kvp in bindings)
+            foreach (var kvp in _bindingsDict)
             {
                 if (Input.anyKey)
                 {

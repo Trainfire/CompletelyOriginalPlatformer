@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Assertions;
 
 namespace Framework
 {
@@ -27,6 +28,16 @@ namespace Framework
         public static Vector2 ToVec2(this Vector3 v)
         {
             return new Vector2(v.x, v.y);
+        }
+    }
+
+    static class ObjectEx
+    {
+        public static T FindObjectOfType<T>() where T : MonoBehaviour
+        {
+            var obj = GameObject.FindObjectOfType<T>();
+            Assert.IsNotNull(obj, string.Format("A GameObject with the {0} component must exist somewhere in the scene.", typeof(T).FullName));
+            return obj;
         }
     }
 
