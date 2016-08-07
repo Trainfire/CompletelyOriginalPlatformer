@@ -15,12 +15,25 @@ public class Game : MonoBehaviour, IInputHandler
     public UI UI { get; private set; }
     public GameCamera Camera { get; private set; }
     public StateListener StateListener { get; private set; }
+    public StateManager StateManager { get; private set; }
     public ZoneManager<GameZone> ZoneManager { get; private set; }
     public ZoneListener<GameZone> ZoneListener { get; private set; }
-    public StateManager StateManager { get; private set; }
+    public MonoEventRelay MonoEventRelay { get; private set; }
 
-    public void Initialize(Data data, UI ui)
+    public void Awake()
     {
+        var existingGame = FindObjectOfType<Game>();
+        if (existingGame != null && existingGame != this)
+        {
+            Debug.LogError("A GameObject with the Game component already exists in the scene. Destroying it...");
+            Destroy(gameObject);
+        }
+
+        DontDestroyOnLoad(this);
+
+        // Relay
+        MonoEventRelay = gameObject.GetOrAddComponent<MonoEventRelay>();
+
         // State
         StateListener = new StateListener();
         StateListener.StateChanged += StateListener_StateChanged;
@@ -31,13 +44,10 @@ public class Game : MonoBehaviour, IInputHandler
         ZoneListener.ZoneChanged += ZoneListener_ZoneChanged;
         ZoneManager = new ZoneManager<GameZone>(ZoneListener);
 
-        // Input. TODO: Move somewhere else.
-        //_inputPC = gameObject.GetOrAddComponent<InputMapPC>();
-        //_inputPC.AddBinding(InputAction.Pause, KeyCode.Escape);
-        //_inputPC.AddBinding(InputAction.Left, KeyCode.A); // Kinda need to decide how to add game-specific enums here...
-        //_inputPC.AddBinding(InputAction.Right, KeyCode.D);
-        //_inputPC.AddBinding(InputAction.Jump, KeyCode.Space);
+        // Level
+        LevelManager.LevelLoaded += LevelManager_LevelLoaded;
 
+        // Input
         _inputPC = ObjectEx.FindObjectOfType<InputMapPC>();
         InputManager.RegisterMap(_inputPC);
         InputManager.RegisterHandler(this);
@@ -60,7 +70,16 @@ public class Game : MonoBehaviour, IInputHandler
         }
         else
         {
-            LevelManager.LoadLevel("main");
+            LevelManager.LoadLevel("level");
+        }
+    }
+
+    private void LevelManager_LevelLoaded(LevelManager.LevelLoadEvent levelLoadEvent)
+    {
+        if (ZoneManager.Zone == GameZone.MainMenu)
+        {
+            var mainMenu = ObjectEx.FindObjectOfType<MainMenu>();
+            mainMenu.Initialize(ZoneManager);
         }
     }
 

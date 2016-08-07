@@ -6,7 +6,8 @@ using System.Text;
 public class ZoneManager<T>
 {
     private IZoneChangeHandler<T> _listener;
-    private T _zone;
+
+    public T Zone { get; private set; }
 
     public ZoneManager(IZoneChangeHandler<T> listener)
     {
@@ -15,8 +16,8 @@ public class ZoneManager<T>
 
     public void SetZone(T zone)
     {
-        _zone = zone;
-        _listener.OnZoneChanged(_zone);
+        Zone = zone;
+        _listener.OnZoneChanged(Zone);
     }
 }
 

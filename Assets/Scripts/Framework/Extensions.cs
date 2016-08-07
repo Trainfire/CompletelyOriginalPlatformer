@@ -33,10 +33,12 @@ namespace Framework
 
     static class ObjectEx
     {
-        public static T FindObjectOfType<T>() where T : MonoBehaviour
+        public static T FindObjectOfType<T>(Action<T> onFind = null) where T : MonoBehaviour
         {
             var obj = GameObject.FindObjectOfType<T>();
             Assert.IsNotNull(obj, string.Format("A GameObject with the {0} component must exist somewhere in the scene.", typeof(T).FullName));
+            if (onFind != null)
+                onFind(obj);
             return obj;
         }
     }
