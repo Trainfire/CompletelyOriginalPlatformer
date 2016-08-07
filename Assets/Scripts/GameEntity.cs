@@ -1,4 +1,5 @@
 using UnityEngine;
+using System;
 using Framework;
 
 public interface IGameEntity
@@ -8,6 +9,8 @@ public interface IGameEntity
 
 public class GameEntity : MonoBehaviourEx, IGameEntity
 {
+    public event Action<GameEntity> Destroyed;
+
     protected Game Game { get; private set; }
 
     public int InstanceID
@@ -26,8 +29,14 @@ public class GameEntity : MonoBehaviourEx, IGameEntity
     protected virtual void OnInitialize() { }
     protected virtual void OnStateChanged(State state) { }
 
+    /// <summary>
+    /// Called when the GameObject is destroyed. If override, you must call the base method!
+    /// </summary>
     protected virtual void OnDestroy()
     {
+        if (Destroyed != null)
+            Destroyed(this);
+
         Game.StateListener.StateChanged -= OnStateChanged;
     }
 }
