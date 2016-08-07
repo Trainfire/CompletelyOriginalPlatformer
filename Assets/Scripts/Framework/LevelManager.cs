@@ -27,7 +27,7 @@ namespace Framework
             if (!scene.IsValid())
             {
                 Debug.LogErrorFormat("Scene '{0}' does not exist and will not be loaded.", sceneName);
-                return;
+                //return;
             }
 
             if (LevelUnloaded != null)

@@ -7,7 +7,6 @@ using UnityEngine.Assertions;
 
 public class Game : MonoBehaviour, IInputHandler
 {
-    private StateManager _stateManager;
     private InputMapPC _inputPC;
 
     private List<GameEntity> _gameEntities;
@@ -16,6 +15,9 @@ public class Game : MonoBehaviour, IInputHandler
     public UI UI { get; private set; }
     public GameCamera Camera { get; private set; }
     public StateListener StateListener { get; private set; }
+    public ZoneManager<GameZone> ZoneManager { get; private set; }
+    public ZoneListener<GameZone> ZoneListener { get; private set; }
+    public StateManager StateManager { get; private set; }
 
     public void Initialize(Data data, UI ui)
     {
@@ -24,7 +26,12 @@ public class Game : MonoBehaviour, IInputHandler
         // State
         StateListener = new StateListener();
         StateListener.StateChanged += StateListener_StateChanged;
-        _stateManager = new StateManager(StateListener);
+        StateManager = new StateManager(StateListener);
+
+        // Zone
+        ZoneListener = new ZoneListener<GameZone>();
+        ZoneListener.ZoneChanged += ZoneListener_ZoneChanged;
+        ZoneManager = new ZoneManager<GameZone>(ZoneListener);
 
         // Input. TODO: Move somewhere else.
         _inputPC = gameObject.GetOrAddComponent<InputMapPC>();
@@ -38,6 +45,7 @@ public class Game : MonoBehaviour, IInputHandler
 
         Data = new Data();
         UI = GetDependency<UI>();
+        UI.Initialize(this);
         Camera = GetDependency<GameCamera>();
 
         // Level handlers
@@ -45,6 +53,19 @@ public class Game : MonoBehaviour, IInputHandler
         LevelManager.LevelLoaded += LevelManager_LevelLoaded;
 
         InitializeEntities();
+    }
+
+    private void ZoneListener_ZoneChanged(GameZone zone)
+    {
+        if (zone == GameZone.MainMenu)
+        {
+            StateManager.SetState(State.Running);
+            LevelManager.LoadLevel("mainmenu");
+        }
+        else
+        {
+            LevelManager.LoadLevel("main");
+        }
     }
 
     private void InitializeEntities()
@@ -87,15 +108,9 @@ public class Game : MonoBehaviour, IInputHandler
     {
         if (action.Action == InputAction.Pause && action.Type == InputActionType.Down)
         {
-            _stateManager.ToggleState();
-            Debug.Log("Game is now " + _stateManager.State);
+            StateManager.ToggleState();
+            Debug.Log("Game is now " + StateManager.State);
         }
-    }
-
-    void LateUpdate()
-    {
-        if (Input.GetKeyDown(KeyCode.F))
-            LevelManager.LoadLevel("main");
     }
 
     T GetDependency<T>() where T : MonoBehaviour

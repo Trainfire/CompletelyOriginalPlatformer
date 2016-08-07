@@ -15,7 +15,10 @@ public class Bootstrapper : MonoBehaviour
     {
         var existingBootstrapper = FindObjectOfType<Bootstrapper>();
         if (existingBootstrapper != null && existingBootstrapper != this)
+        {
+            Debug.LogError("A bootstrapper already exists in the scene...");
             Destroy(gameObject);
+        }
 
         _relay = gameObject.GetOrAddComponent<MonoEventRelay>();
     }
