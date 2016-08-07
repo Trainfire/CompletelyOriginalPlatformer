@@ -7,10 +7,6 @@ using UnityEngine.Assertions;
 
 public class Game : MonoBehaviour, IInputHandler
 {
-    private InputMapPC _inputPC;
-
-    private GameEntityManager _gameEntityManager;
-
     public Data Data { get; private set; }
     public UI UI { get; private set; }
     public GameCamera Camera { get; private set; }
@@ -25,8 +21,9 @@ public class Game : MonoBehaviour, IInputHandler
         var existingGame = FindObjectOfType<Game>();
         if (existingGame != null && existingGame != this)
         {
-            Debug.LogError("A GameObject with the Game component already exists in the scene. Destroying it...");
+            Debug.LogWarning("A GameObject with the Game component already exists in the scene. Destroying it...");
             Destroy(gameObject);
+            return;
         }
 
         DontDestroyOnLoad(this);
@@ -48,7 +45,7 @@ public class Game : MonoBehaviour, IInputHandler
         LevelManager.LevelLoaded += LevelManager_LevelLoaded;
 
         // Input
-        _inputPC = ObjectEx.FindObjectOfType<InputMapPC>();
+        var _inputPC = ObjectEx.FindObjectOfType<InputMapPC>();
         InputManager.RegisterMap(_inputPC);
         InputManager.RegisterHandler(this);
 
@@ -57,8 +54,11 @@ public class Game : MonoBehaviour, IInputHandler
         Camera = ObjectEx.FindObjectOfType<GameCamera>();
 
         // Inject dependencies
-        _gameEntityManager = new GameEntityManager(this);
+        new GameEntityManager(this);
         UI.Initialize(this);
+
+        // Load main menu
+        ZoneManager.SetZone(GameZone.MainMenu);
     }
 
     private void ZoneListener_ZoneChanged(GameZone zone)

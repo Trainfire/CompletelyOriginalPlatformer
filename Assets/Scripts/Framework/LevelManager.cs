@@ -33,29 +33,13 @@ namespace Framework
             if (LevelUnloaded != null)
                 LevelUnloaded(new LevelLoadEvent(SceneManager.GetActiveScene().name));
 
-            var levelLoader = new GameObject();
-            GameObject.DontDestroyOnLoad(levelLoader);
-            levelLoader.AddComponent<LevelLoader>().LoadLevel(sceneName, () =>
+            var levelLoader = GameObject.FindObjectOfType<LevelLoader>();
+
+            levelLoader.LoadLevel(sceneName, () =>
             {
                 if (LevelLoaded != null)
                     LevelLoaded(new LevelLoadEvent(sceneName));
             });
-        }
-    }
-
-    public class LevelLoader : MonoBehaviour
-    {
-        public void LoadLevel(string sceneName, Action onDone)
-        {
-            StartCoroutine(Load(sceneName, onDone));
-        }
-
-        IEnumerator Load(string sceneName, Action onDone)
-        {
-            var task = SceneManager.LoadSceneAsync(sceneName);
-            yield return task;
-            onDone();
-            Destroy(gameObject);
         }
     }
 }
