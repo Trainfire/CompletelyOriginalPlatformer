@@ -15,6 +15,14 @@ public class HUD : MonoBehaviour
     {
         _worldPopupPrototype = UIUtility.Add<UIWorldPopup>(transform, _worldPopupPrototype.gameObject);
         _worldPopupPrototype.gameObject.SetActive(false);
+
+        var listener = new GameEntityListener<WorldPopup>();
+        listener.Spawned += Listener_Spawned;
+    }
+
+    private void Listener_Spawned(WorldPopup obj)
+    {
+        Debug.Log("A worldpopup was spawned.");
     }
 
     public void ShowPopup(WorldPopup popup, Vector2 worldPosition)

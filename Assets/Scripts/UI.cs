@@ -12,16 +12,11 @@ public class UI : MonoBehaviourEx, IInputHandler, IGameEntity
 
     private Game _game;
 
-    public HUD HUD
-    {
-        get { return _hud; }
-    }
-
     public void Initialize(Game game)
     {
         _game = game;
 
-        Assert.IsNotNull(HUD, "HUD is null and shouldn't be.");
+        Assert.IsNotNull(_hud, "HUD is null and shouldn't be.");
         Assert.IsNotNull(_pauseMenu, "PauseMenu is null and shouldn't be.");
 
         game.ZoneListener.ZoneChanged += ZoneListener_ZoneChanged;

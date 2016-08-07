@@ -1,7 +1,12 @@
 using UnityEngine;
+using System;
+using Framework;
 
 public class WorldPopup : GameEntity
 {
+    public event Action<WorldPopup> TriggerEnter;
+    public event Action<WorldPopup> TriggerLeave;
+
     public string Content;
 
     private BoxCollider2D _trigger;
@@ -13,13 +18,11 @@ public class WorldPopup : GameEntity
 
     private void OnTriggerEnter2D()
     {
-        Debug.Log("Trigger Entered");
-        Game.UI.HUD.ShowPopup(this, transform.position);
+        TriggerEnter.InvokeSafe(this);
     }
 
     private void OnTriggerExit2D()
     {
-        Debug.Log("Trigger Left");
-        Game.UI.HUD.HidePopup();
+        TriggerLeave.InvokeSafe(this);
     }
 }
