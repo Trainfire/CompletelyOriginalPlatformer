@@ -5,7 +5,7 @@ namespace Framework
     /// <summary>
     /// Listens for a particular type of GameEntity to be spawned and triggers a callback.
     /// </summary>
-    class GameEntityListener<TTargetType> : IDisposable where TTargetType : GameEntity
+    class GameEntityListener<TTargetType> where TTargetType : GameEntity
     {
         public event Action<TTargetType> Spawned;
 
