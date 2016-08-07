@@ -9,7 +9,7 @@ public class Game : MonoBehaviour, IInputHandler
 {
     private InputMapPC _inputPC;
 
-    private List<GameEntity> _gameEntities;
+    private GameEntityManager _gameEntityManager;
 
     public Data Data { get; private set; }
     public UI UI { get; private set; }
@@ -21,7 +21,7 @@ public class Game : MonoBehaviour, IInputHandler
 
     public void Initialize(Data data, UI ui)
     {
-        _gameEntities = new List<GameEntity>();
+        _gameEntityManager = new GameEntityManager(this);
 
         // State
         StateListener = new StateListener();
@@ -48,11 +48,7 @@ public class Game : MonoBehaviour, IInputHandler
         UI.Initialize(this);
         Camera = GetDependency<GameCamera>();
 
-        // Level handlers
-        LevelManager.LevelUnloaded += LevelManager_LevelUnloaded;
-        LevelManager.LevelLoaded += LevelManager_LevelLoaded;
-
-        InitializeEntities();
+        _gameEntityManager.Initialize();
     }
 
     private void ZoneListener_ZoneChanged(GameZone zone)
@@ -66,37 +62,6 @@ public class Game : MonoBehaviour, IInputHandler
         {
             LevelManager.LoadLevel("main");
         }
-    }
-
-    private void InitializeEntities()
-    {
-        foreach (var gameEntity in FindObjectsOfType<GameEntity>())
-        {
-            _gameEntities.Add(gameEntity);
-        }
-
-        _gameEntities
-            .Cast<IGameEntity>()
-            .ToList()
-            .ForEach(x => x.Initialize(this));
-    }
-
-    private void CleanupEntities()
-    {
-        _gameEntities.ForEach(x => Destroy(x.gameObject));
-        _gameEntities.Clear();
-    }
-
-    private void LevelManager_LevelLoaded(LevelManager.LevelLoadEvent obj)
-    {
-        Debug.LogFormat("Level {0} was loaded.", obj.SceneName);
-        InitializeEntities();
-    }
-
-    private void LevelManager_LevelUnloaded(LevelManager.LevelLoadEvent obj)
-    {
-        Debug.LogFormat("Level {0} was unloaded.", obj.SceneName);
-        CleanupEntities();
     }
 
     private void StateListener_StateChanged(State state)
@@ -118,13 +83,5 @@ public class Game : MonoBehaviour, IInputHandler
         var dependency = FindObjectOfType<T>();
         Assert.IsNotNull(dependency, string.Format("A GameObject with the {0} component must exist somewhere in the scene.", typeof(T).FullName));
         return dependency;
-    }
-
-    T GetEntity<T>() where T : GameEntity
-    {
-        var matchingEntity = _gameEntities.FirstOrDefault(x => x.GetType() == typeof(T));
-        if (matchingEntity != null)
-            return matchingEntity as T;
-        return null;
     }
 }
