@@ -5,29 +5,21 @@ using System.Collections;
 using Framework;
 using System;
 
-public class UI : MonoBehaviourEx, IInputHandler, IGameEntity
+public class UI : MonoBehaviourEx, IInputHandler
 {
     [SerializeField] private PauseMenu _pauseMenu;
     [SerializeField] private HUD _hud;
 
-    private Game _game;
+    private GameController _gameController;
 
-    public void Initialize(Game game)
+    public void Initialize(GameController gameController)
     {
-        _game = game;
+        _gameController = gameController;
 
         Assert.IsNotNull(_hud, "HUD is null and shouldn't be.");
         Assert.IsNotNull(_pauseMenu, "PauseMenu is null and shouldn't be.");
 
-        game.ZoneListener.ZoneChanged += ZoneListener_ZoneChanged;
-
-        _pauseMenu.Initialize(game.StateManager, game.StateListener, game.ZoneManager);
-    }
-
-    private void ZoneListener_ZoneChanged(GameZone gameZone)
-    {
-        if (gameZone == GameZone.MainMenu)
-            _pauseMenu.gameObject.SetActive(false);
+        _pauseMenu.Initialize(_gameController);
     }
 
     public void HandleInput(InputActionEvent action)

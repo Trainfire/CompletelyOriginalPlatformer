@@ -11,6 +11,7 @@ namespace Framework
 
     public interface IStateHandler
     {
+        event Action<State> StateChanged;
         void OnStateChanged(State state);
     }
 
@@ -18,11 +19,13 @@ namespace Framework
     {
         private IStateHandler _handler;
 
+        public StateListener Listener { get; private set; }
         public State State { get; private set; }
 
-        public StateManager(IStateHandler handler)
+        public StateManager()
         {
-            _handler = handler;
+            Listener = new StateListener();
+            _handler = Listener;
         }
 
         public void SetState(State state)

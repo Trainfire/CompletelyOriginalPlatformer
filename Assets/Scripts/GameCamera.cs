@@ -14,6 +14,7 @@ public interface IGameCameraController
 
 public class GameCamera : MonoBehaviour
 {
+    private Game _game;
     private IGameCameraController _controller;
     private List<ScreenEffect> _screenEffects;
 
@@ -25,6 +26,18 @@ public class GameCamera : MonoBehaviour
         Assert.IsNotNull(Camera);
 
         _screenEffects = new List<ScreenEffect>();
+    }
+
+    public void Initialize(Game game)
+    {
+        _game = game;
+        _game.StateListener.StateChanged += StateListener_StateChanged;
+    }
+
+    private void StateListener_StateChanged(State state)
+    {
+        // Stop updating if paused.
+        enabled = state == State.Running;
     }
 
     public void SetController(IGameCameraController controller)

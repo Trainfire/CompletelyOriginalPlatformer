@@ -1,38 +1,38 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using Framework;
 
 public class ZoneManager<T>
 {
-    private IZoneChangeHandler<T> _listener;
+    public ZoneListener<T> Listener { get; private set; }
+
+    private IZoneHandler<T> _handler;
 
     public T Zone { get; private set; }
 
-    public ZoneManager(IZoneChangeHandler<T> listener)
+    public ZoneManager()
     {
-        _listener = listener;
+        Listener = new ZoneListener<T>();
+        _handler = Listener;
     }
 
     public void SetZone(T zone)
     {
         Zone = zone;
-        _listener.OnZoneChanged(Zone);
+        _handler.OnZoneChanged(Zone);
     }
 }
 
-public interface IZoneChangeHandler<T>
+public interface IZoneHandler<T>
 {
     void OnZoneChanged(T zone);
 }
 
-public class ZoneListener<T> : IZoneChangeHandler<T>
+public class ZoneListener<T> : IZoneHandler<T>
 {
     public event Action<T> ZoneChanged;
 
-    void IZoneChangeHandler<T>.OnZoneChanged(T zone)
+    void IZoneHandler<T>.OnZoneChanged(T zone)
     {
-        if (ZoneChanged != null)
-            ZoneChanged(zone);
+        ZoneChanged.InvokeSafe(zone);
     }
 }

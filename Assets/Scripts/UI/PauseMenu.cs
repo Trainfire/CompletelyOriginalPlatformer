@@ -2,20 +2,13 @@
 using Framework;
 using System;
 
-public class PauseMenu : MonoBehaviour
+public class PauseMenu : MenuBase
 {
     [SerializeField] private UIPauseMenu _view;
 
-    private StateManager _stateManager;
-    private StateListener _stateListener;
-    private ZoneManager<GameZone> _zoneManager;
-
-    public void Initialize(StateManager stateManager, StateListener stateListener, ZoneManager<GameZone> zoneManager)
+    protected override void OnInitialize()
     {
-        _stateManager = stateManager;
-        _stateListener = stateListener;
-        _stateListener.StateChanged += StateListener_OnStateChanged;
-        _zoneManager = zoneManager;
+        GameController.Game.StateListener.StateChanged += StateListener_OnStateChanged;
 
         _view.gameObject.SetActive(false);
         _view.ResumePressed += View_ResumePressed;
@@ -29,12 +22,12 @@ public class PauseMenu : MonoBehaviour
 
     private void View_ResumePressed()
     {
-        _stateManager.SetState(State.Running);
+        GameController.Resume();
     }
 
     private void View_QuitPressed()
     {
-        _zoneManager.SetZone(GameZone.MainMenu);
+        GameController.QuitToMainMenu();
     }
 
     private void OnDestroy()
@@ -42,7 +35,8 @@ public class PauseMenu : MonoBehaviour
         _view.ResumePressed -= View_ResumePressed;
         _view.QuitPressed -= View_QuitPressed;
 
-        if (_stateListener != null)
-            _stateListener.StateChanged -= StateListener_OnStateChanged;
+        // Buh?
+        if (GameController != null)
+            GameController.Game.StateListener.StateChanged -= StateListener_OnStateChanged;
     }
 }
