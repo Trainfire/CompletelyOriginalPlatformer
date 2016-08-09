@@ -7,18 +7,16 @@ public class HUD : MenuBase
 {
     [SerializeField] private HUDWorldPopups _hudPopups;
 
-    private List<HUDWorldElement> _hudElements;
+    private List<GameObject> _hudElements;
 
     protected override void OnInitialize()
     {
-        GameController.Game.ZoneListener.ZoneChanging += ZoneListener_ZoneChanging;
-
-        _hudElements = new List<HUDWorldElement>();
-        _hudElements.Add(_hudPopups);
+        _hudElements = new List<GameObject>();
+        _hudElements.Add(_hudPopups.gameObject);
     }
 
-    private void ZoneListener_ZoneChanging()
+    public void OnDestroy()
     {
-        // TODO: Cleanup HUD elements on level unload.
+        _hudElements.Clear();
     }
 }

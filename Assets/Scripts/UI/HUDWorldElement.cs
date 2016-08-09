@@ -1,18 +1,12 @@
 ﻿using UnityEngine;
 using Framework;
 using System.Collections.Generic;
-using System;
-
-public abstract class HUDWorldElement : MonoBehaviour
-{
-    public abstract void Cleanup();
-}
 
 /// <summary>
 /// Represents a HUD element that is bound to a GameEntity in the world.
 /// </summary>
 /// <typeparam name="TGameEntity"></typeparam>
-public abstract class HUDWorldElement<TGameEntity> : HUDWorldElement where TGameEntity : GameEntity
+public abstract class HUDWorldElement<TGameEntity> : MonoBehaviour where TGameEntity : GameEntity
 {
     private GameEntityListener<TGameEntity> _entityListener;
     private List<TGameEntity> _instances;
@@ -40,8 +34,9 @@ public abstract class HUDWorldElement<TGameEntity> : HUDWorldElement where TGame
     protected virtual void OnElementSpawned(TGameEntity element) { }
     protected virtual void OnElementDestroyed(TGameEntity element) { }
 
-    public override void Cleanup()
+    protected virtual void OnDestroy()
     {
-        // TODO.
+        _entityListener.Spawned -= Element_Spawned;
+        _instances.Clear();
     }
 }
