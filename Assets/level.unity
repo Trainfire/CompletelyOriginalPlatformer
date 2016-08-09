@@ -723,7 +723,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 47eca63c47839be499ec424ab36ff950, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Prototype: {fileID: 1903386177}
   Content: Why hello there!
 --- !u!61 &662915553
 BoxCollider2D:

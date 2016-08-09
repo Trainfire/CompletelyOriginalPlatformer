@@ -2,7 +2,7 @@
 using Framework;
 using System;
 
-public class MenuBase : MonoBehaviourEx
+public class GameControllerDependant : MonoBehaviourEx
 {
     protected GameController GameController { get; private set; }
 

@@ -19,20 +19,8 @@ public class GameController : IInputHandler
         Game = game;
         _stateManager = stateManager;
         _zoneManager = zoneManager;
-        _zoneManager.Listener.ZoneChanged += Listener_ZoneChanged;
 
         InputManager.RegisterHandler(this);
-    }
-
-    private void Listener_ZoneChanged(GameZone gameZone)
-    {
-        _stateManager.SetState(State.Running);
-
-        var menus = GameObject.FindObjectsOfType<MenuBase>();
-        for (int i = 0; i < menus.Length; i++)
-        {
-            menus[i].Initialize(this);
-        }
     }
 
     public void StartGame()

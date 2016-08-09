@@ -15,34 +15,23 @@ namespace Framework
         public GameEntityManager(Game game)
         {
             _game = game;
-
             _gameEntities = new List<GameEntity>();
-
-            game.ZoneListener.ZoneChanging += ZoneListener_ZoneChanging;
-            game.ZoneListener.ZoneChanged += ZoneListener_ZoneChanged;
-
-            InitializeEntities();
         }
 
-        private void ZoneListener_ZoneChanged(GameZone obj)
-        {
-            InitializeEntities();
-        }
-
-        private void ZoneListener_ZoneChanging()
-        {
-            // GameEntities will be destroyed on level load, so just unhook the event here.
-            _gameEntities.ForEach(x => x.Destroyed -= GameEntity_Destroyed);
-            _gameEntities.Clear();
-        }
-
-        private void InitializeEntities()
+        public void LoadEntities()
         {
             // TODO: Get objects by IGameEntity instead of concrete class. Need to investigate how to do this.
             foreach (var gameEntity in GameObject.FindObjectsOfType<GameEntity>())
             {
                 Register(gameEntity);
             }
+        }
+
+        public void Cleanup()
+        {
+            // GameEntities will be destroyed on level load, so just unhook the event here.
+            _gameEntities.ForEach(x => x.Destroyed -= GameEntity_Destroyed);
+            _gameEntities.Clear();
         }
 
         private static void Register(GameEntity gameEntity)

@@ -2,7 +2,7 @@ using UnityEngine;
 using Framework;
 using System;
 
-public class MainMenu : MenuBase
+public class MainMenu : GameControllerDependant
 {
     [SerializeField] private UIMainMenu _view;
 

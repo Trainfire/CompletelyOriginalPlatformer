@@ -2,7 +2,7 @@
 using Framework;
 using System;
 
-public class PauseMenu : MenuBase
+public class PauseMenu : GameControllerDependant
 {
     [SerializeField] private UIPauseMenu _view;
 
