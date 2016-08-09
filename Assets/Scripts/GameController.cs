@@ -1,5 +1,7 @@
 ﻿using UnityEngine;
+using UnityEngine.SceneManagement;
 using System;
+using System.Collections;
 using Framework;
 
 /// <summary>
@@ -17,41 +19,25 @@ public class GameController : IInputHandler
         Game = game;
         _stateManager = stateManager;
         _zoneManager = zoneManager;
-
-        LevelManager.LevelLoaded += LevelManager_LevelLoaded;
+        _zoneManager.Listener.ZoneChanged += Listener_ZoneChanged;
 
         InputManager.RegisterHandler(this);
     }
 
-    private void LevelManager_LevelLoaded(LevelManager.LevelLoadEvent obj)
+    private void Listener_ZoneChanged(GameZone gameZone)
     {
-        if (obj.SceneName == "mainmenu")
-        {
-            // Game was probably paused when returning to menu. So set it back to Running.
-            _stateManager.SetState(State.Running);
+        _stateManager.SetState(State.Running);
 
-            _zoneManager.SetZone(GameZone.MainMenu);
-
-            var mainMenu = GameObject.FindObjectOfType<MainMenu>();
-            if (mainMenu == null)
-            {
-                Debug.LogError("Failed to find the MainMenu.");
-            }
-            else
-            {
-                mainMenu.Initialize(this);
-            }
-        }
-        else
+        var menus = GameObject.FindObjectsOfType<MenuBase>();
+        for (int i = 0; i < menus.Length; i++)
         {
-            _zoneManager.SetZone(GameZone.InGame);
+            menus[i].Initialize(this);
         }
     }
 
     public void StartGame()
     {
-        _zoneManager.SetZone(GameZone.InGame);
-        LevelManager.LoadLevel("level");
+        LoadLevel("level");
     }
 
     public void Resume()
@@ -64,14 +50,19 @@ public class GameController : IInputHandler
         _stateManager.SetState(State.Paused);
     }
 
-    public void QuitToMainMenu()
-    {
-        LevelManager.LoadLevel("mainmenu");
-    }
-
     public void QuitGame()
     {
         throw new NotImplementedException();
+    }
+
+    public void LoadMainMenu()
+    {
+        _zoneManager.SetZone(GameZone.MainMenu, "MainMenu");
+    }
+
+    public void LoadLevel(string sceneName)
+    {
+        _zoneManager.SetZone(GameZone.InGame, "InGame", sceneName);
     }
 
     void IInputHandler.HandleInput(InputActionEvent action)
@@ -81,5 +72,14 @@ public class GameController : IInputHandler
             _stateManager.ToggleState();
             Debug.Log("Game is now " + _stateManager.State);
         }
+    }
+}
+
+
+public class ZoneChanger : MonoBehaviour
+{
+    public void Initialize(ZoneManager<GameZone> zoneManager)
+    {
+
     }
 }

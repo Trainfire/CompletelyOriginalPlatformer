@@ -14,12 +14,7 @@ public class UI : MonoBehaviourEx, IInputHandler
 
     public void Initialize(GameController gameController)
     {
-        _gameController = gameController;
-
-        Assert.IsNotNull(_hud, "HUD is null and shouldn't be.");
-        Assert.IsNotNull(_pauseMenu, "PauseMenu is null and shouldn't be.");
-
-        _pauseMenu.Initialize(_gameController);
+       
     }
 
     public void HandleInput(InputActionEvent action)

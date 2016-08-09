@@ -18,10 +18,22 @@ namespace Framework
 
             _gameEntities = new List<GameEntity>();
 
-            LevelManager.LevelLoaded += LevelManager_LevelLoaded;
-            LevelManager.LevelUnloaded += LevelManager_LevelUnloaded;
+            game.ZoneListener.ZoneChanging += ZoneListener_ZoneChanging;
+            game.ZoneListener.ZoneChanged += ZoneListener_ZoneChanged;
 
             InitializeEntities();
+        }
+
+        private void ZoneListener_ZoneChanged(GameZone obj)
+        {
+            InitializeEntities();
+        }
+
+        private void ZoneListener_ZoneChanging()
+        {
+            // GameEntities will be destroyed on level load, so just unhook the event here.
+            _gameEntities.ForEach(x => x.Destroyed -= GameEntity_Destroyed);
+            _gameEntities.Clear();
         }
 
         private void InitializeEntities()
@@ -31,18 +43,6 @@ namespace Framework
             {
                 Register(gameEntity);
             }
-        }
-
-        private void LevelManager_LevelUnloaded(LevelManager.LevelLoadEvent levelLoadEvent)
-        {
-            // GameEntities will be destroyed on level load, so just unhook the event here.
-            _gameEntities.ForEach(x => x.Destroyed -= GameEntity_Destroyed);
-            _gameEntities.Clear();
-        }
-
-        private void LevelManager_LevelLoaded(LevelManager.LevelLoadEvent levelLoadEvent)
-        {
-            InitializeEntities();
         }
 
         private static void Register(GameEntity gameEntity)

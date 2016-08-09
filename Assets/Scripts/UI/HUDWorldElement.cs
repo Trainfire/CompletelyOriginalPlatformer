@@ -33,10 +33,12 @@ public abstract class HUDWorldElement<TGameEntity> : HUDWorldElement where TGame
 
     private void Element_Destroyed(GameEntity gameEntity)
     {
+        OnElementDestroyed(gameEntity as TGameEntity);
         _instances.Remove(gameEntity as TGameEntity);
     }
 
     protected virtual void OnElementSpawned(TGameEntity element) { }
+    protected virtual void OnElementDestroyed(TGameEntity element) { }
 
     public override void Cleanup()
     {

@@ -5,16 +5,6 @@ public class Bootstrapper : MonoBehaviour
 {
     public void Awake()
     {
-        var existingGame = FindObjectOfType<Bootstrapper>();
-        if (existingGame != null && existingGame != this)
-        {
-            Debug.LogWarning("A GameObject with the Game component already exists in the scene. Destroying it...");
-            Destroy(gameObject);
-            return;
-        }
-
-        DontDestroyOnLoad(this);
-
         // Relay
         gameObject.GetOrAddComponent<MonoEventRelay>();
 

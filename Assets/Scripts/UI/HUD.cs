@@ -3,22 +3,21 @@ using System.Collections.Generic;
 using Framework;
 using Framework.UI;
 
-public class HUD : MonoBehaviour
+public class HUD : MenuBase
 {
-    [SerializeField] private Canvas _canvas;
     [SerializeField] private HUDWorldPopups _hudPopups;
 
     private List<HUDWorldElement> _hudElements;
 
-    private void Awake()
+    protected override void OnInitialize()
     {
+        GameController.Game.ZoneListener.ZoneChanging += ZoneListener_ZoneChanging;
+
         _hudElements = new List<HUDWorldElement>();
         _hudElements.Add(_hudPopups);
-
-        LevelManager.LevelUnloaded += LevelManager_LevelUnloaded;
     }
 
-    private void LevelManager_LevelUnloaded(LevelManager.LevelLoadEvent levelLoadEvent)
+    private void ZoneListener_ZoneChanging()
     {
         // TODO: Cleanup HUD elements on level unload.
     }

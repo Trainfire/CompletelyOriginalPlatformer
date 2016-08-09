@@ -27,7 +27,7 @@ public class PauseMenu : MenuBase
 
     private void View_QuitPressed()
     {
-        GameController.QuitToMainMenu();
+        GameController.LoadMainMenu();
     }
 
     private void OnDestroy()

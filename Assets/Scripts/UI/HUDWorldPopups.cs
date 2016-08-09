@@ -21,6 +21,13 @@ public class HUDWorldPopups : HUDWorldElement<WorldPopup>
         element.TriggerLeave += Element_TriggerLeave;
     }
 
+    protected override void OnElementDestroyed(WorldPopup element)
+    {
+        base.OnElementDestroyed(element);
+        element.TriggerEnter -= Element_TriggerEnter;
+        element.TriggerLeave -= Element_TriggerLeave;
+    }
+
     private void Element_TriggerEnter(WorldPopup worldPopup)
     {
         _popupInstance.Content = worldPopup.Content;
