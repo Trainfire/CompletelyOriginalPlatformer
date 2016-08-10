@@ -13,3 +13,5 @@ EditorBuildSettings:
     path: Assets/mainmenu.unity
   - enabled: 1
     path: Assets/ingame.unity
+  - enabled: 1
+    path: Assets/loader.unity

@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using UnityEngine.SceneManagement;
 using System;
 using System.Collections;
@@ -12,6 +12,7 @@ public class ZoneManager<T> : MonoBehaviour
 
     public ZoneListener<T> Listener { get; private set; }
     public T Zone { get; private set; }
+    public string LoadingScene { get; set; }
 
     protected virtual void Awake()
     {
@@ -27,13 +28,15 @@ public class ZoneManager<T> : MonoBehaviour
 
     IEnumerator SetZoneAsync(T zone, params string[] sceneNames)
     {
-        // TODO: Load loading screen here...
+        SceneManager.LoadScene(LoadingScene, LoadSceneMode.Additive);
 
         _handler.OnZoneChanging();
 
         _activeScenes.ForEach(x => SceneManager.UnloadScene(x));
         _activeScenes.Clear();
 
+        int scenesLoaded = 0;
+        float totalProgress = 0f;
         foreach (var scene in sceneNames)
         {
             _activeScenes.Add(scene);
@@ -42,13 +45,16 @@ public class ZoneManager<T> : MonoBehaviour
 
             while (!task.isDone)
             {
-                // TODO: Progress here.
+                totalProgress = (scenesLoaded + task.progress) / sceneNames.Length;
+                _handler.OnZoneLoadProgress(totalProgress);
                 yield return null;
             }
+
+            scenesLoaded++;
         }
 
         Zone = zone;
-
+        SceneManager.UnloadScene(LoadingScene);
         _handler.OnZoneChanged(zone);
     }
 }

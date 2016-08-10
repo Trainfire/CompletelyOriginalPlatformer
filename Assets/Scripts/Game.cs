@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System;
 using Framework;
 
@@ -33,6 +33,7 @@ public class Game : MonoBehaviour
         _stateManager = new StateManager();
 
         _zoneManager = gameObject.AddComponent<GameZoneManager>();
+        _zoneManager.LoadingScene = "loader";
         _zoneManager.Listener.ZoneChanging += Listener_ZoneChanging;
         _zoneManager.Listener.ZoneChanged += Listener_ZoneChanged;
 
