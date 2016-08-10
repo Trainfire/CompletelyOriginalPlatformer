@@ -1,5 +1,5 @@
-using UnityEngine;
-using System;
+﻿using UnityEngine;
+using UnityEngine.SceneManagement;
 using Framework;
 
 public class Game : MonoBehaviour
@@ -19,10 +19,19 @@ public class Game : MonoBehaviour
         get { return _zoneManager.Listener; }
     }
 
+    public bool Initialized { get; private set; }
     public GameCamera Camera { get; private set; }
 
-    private void Awake()
+    public void Initialize(string sceneName = null)
     {
+        if (Initialized)
+        {
+            Debug.LogWarning("Game has already been initialized. This should not happen!");
+            return;
+        }
+
+        Initialized = true;
+
         // Relay
         gameObject.GetOrAddComponent<MonoEventRelay>();
 
@@ -42,7 +51,15 @@ public class Game : MonoBehaviour
         // Allows the control of the game. IE, Resuming, Pausing, Load Level, etc.
         _gameController = new GameController(this, _stateManager, _zoneManager);
 
-        _gameController.LoadMainMenu();
+        // Determine which zone to go to. Not the cleanest implementation but w/e.
+        if (sceneName != null)
+        {
+            _gameController.LoadLevel(sceneName);
+        }
+        else
+        {
+            _gameController.LoadMainMenu();
+        }
     }
 
     private void Listener_ZoneChanging()
@@ -54,12 +71,12 @@ public class Game : MonoBehaviour
     {
         _stateManager.SetState(State.Running);
 
-        _gameEntityManager.LoadEntities();
-
         var gameCamera = GameObject.FindObjectOfType<GameCamera>();
         Camera = gameCamera;
         if (Camera != null)
             Camera.Initialize(this);
+
+        _gameEntityManager.LoadEntities();
 
         var controllerDependants = GameObject.FindObjectsOfType<GameControllerDependant>();
         for (int i = 0; i < controllerDependants.Length; i++)

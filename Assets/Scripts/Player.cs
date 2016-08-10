@@ -47,7 +47,9 @@ public class Player : GameEntity, IInputHandler
     {
         base.OnDestroy();
         InputManager.UnregisterHandler(this);
-        _playerController.Landed -= PlayerController_Landed;
+
+        if (_playerController != null)
+            _playerController.Landed -= PlayerController_Landed;
     }
 
     void IInputHandler.HandleInput(InputActionEvent action)

@@ -50,6 +50,11 @@ public class GameController : IInputHandler
 
     public void LoadLevel(string sceneName)
     {
+        // Find a bootstrapper in the scene and remove it.
+        var bootstrapper = GameObject.FindObjectOfType<Bootstrapper>();
+        if (bootstrapper != null)
+            GameObject.Destroy(bootstrapper);
+
         _zoneManager.SetZone(GameZone.InGame, "InGame", sceneName);
     }
 

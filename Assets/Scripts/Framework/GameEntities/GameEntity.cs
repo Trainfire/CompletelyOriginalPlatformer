@@ -38,7 +38,8 @@ namespace Framework
             if (Destroyed != null)
                 Destroyed(this);
 
-            Game.StateListener.StateChanged -= OnStateChanged;
+            if (Game != null)
+                Game.StateListener.StateChanged -= OnStateChanged;
         }
     }
 }
