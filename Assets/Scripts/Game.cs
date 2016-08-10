@@ -4,6 +4,7 @@ using Framework;
 
 public class Game : MonoBehaviour
 {
+    private ConsoleController _console;
     private GameEntityManager _gameEntityManager;
     private GameController _gameController;
 
@@ -31,6 +32,18 @@ public class Game : MonoBehaviour
         }
 
         Initialized = true;
+
+        // Console
+        var consoleView = FindObjectOfType<ConsoleView>();
+        if (consoleView == null)
+        {
+            Debug.LogError("Failed to find a ConsoleView! The Console will be unavailable!");
+        }
+        else
+        {
+            _console = new ConsoleController();
+            consoleView.SetConsole(_console);
+        }
 
         // Relay
         gameObject.GetOrAddComponent<MonoEventRelay>();
