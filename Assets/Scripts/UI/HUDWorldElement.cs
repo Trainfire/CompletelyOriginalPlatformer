@@ -14,8 +14,9 @@ public abstract class HUDWorldElement<TGameEntity> : MonoBehaviour where TGameEn
     protected virtual void Awake()
     {
         _instances = new List<TGameEntity>();
-        _entityListener = new GameEntityListener<TGameEntity>();
-        _entityListener.Spawned += Element_Spawned;
+        _entityListener = GameEntityManager.AddListener<TGameEntity>();
+        _entityListener.OnSpawn(Element_Spawned);
+        _entityListener.OnRemove(Element_Destroyed);
     }
 
     private void Element_Spawned(TGameEntity element)
@@ -36,7 +37,6 @@ public abstract class HUDWorldElement<TGameEntity> : MonoBehaviour where TGameEn
 
     protected virtual void OnDestroy()
     {
-        _entityListener.Spawned -= Element_Spawned;
         _instances.Clear();
     }
 }

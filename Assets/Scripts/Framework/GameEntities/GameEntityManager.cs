@@ -11,12 +11,14 @@ namespace Framework
         public static event Action<GameEntity> EntityRemoved;
 
         private static List<GameEntity> _gameEntities;
+        private static List<IGameEntityListener> _listeners;
         private static Game _game;
 
         public GameEntityManager(Game game)
         {
             _game = game;
             _gameEntities = new List<GameEntity>();
+            _listeners = new List<IGameEntityListener>();
         }
 
         public void LoadEntities()
@@ -30,6 +32,10 @@ namespace Framework
 
         public void Cleanup()
         {
+            // Cleanup listeners.   
+            _listeners.ForEach(x => x.Destroy());
+            _listeners.Clear();
+
             // GameEntities will be destroyed on level load, so just unhook the event here.
             _gameEntities.ToList().ForEach(x => Unregister(x));
             _gameEntities.Clear();
@@ -52,6 +58,8 @@ namespace Framework
                 if (EntitySpawned != null)
                     EntitySpawned(gameEntity);
 
+                _listeners.ForEach(x => x.OnSpawn(gameEntity));
+
                 _gameEntities.Add(gameEntity);
             }
         }
@@ -63,6 +71,8 @@ namespace Framework
 
             if (EntityRemoved != null)
                 EntityRemoved(gameEntity);
+
+            _listeners.ForEach(x => x.OnRemove(gameEntity));
         }
 
         public static T Spawn<T>(T original) where T : GameEntity
@@ -82,6 +92,18 @@ namespace Framework
             {
                 Unregister(gameEntity);
             }
+        }
+
+        /// <summary>
+        /// Adds a listener which will callback when a GameEntity of the specified type is Spawned or Removed.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        public static GameEntityListener<T> AddListener<T>() where T : GameEntity
+        {
+            var gameEntityEvent = new GameEntityListener<T>();
+            _listeners.Add(gameEntityEvent);
+            return gameEntityEvent;
         }
     }
 }

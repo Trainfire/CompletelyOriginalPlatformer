@@ -9,7 +9,6 @@ public class HUD : GameControllerDependant
     [SerializeField] private HUDTokens _hudTokens;
 
     private List<GameObject> _hudElements;
-    private GameEntityListener<World> _worldListener;
 
     protected override void OnInitialize()
     {
@@ -18,9 +17,9 @@ public class HUD : GameControllerDependant
         _hudElements.Add(_hudTokens.gameObject);
 
         // Listen for the World to be spawned.
-        _worldListener = new GameEntityListener<World>();
-        _worldListener.Spawned += WorldListener_Spawned;
-        _worldListener.Removed += WorldListener_Removed;
+        var _worldListener = GameEntityManager.AddListener<World>();
+        _worldListener.OnSpawn(WorldListener_Spawned);
+        _worldListener.OnRemove(WorldListener_Removed);
     }
 
     private void WorldListener_Removed(World obj)
@@ -51,7 +50,6 @@ public class HUD : GameControllerDependant
 
     public void OnDestroy()
     {
-        _worldListener.Destroy();
         _hudElements.Clear();
     }
 }

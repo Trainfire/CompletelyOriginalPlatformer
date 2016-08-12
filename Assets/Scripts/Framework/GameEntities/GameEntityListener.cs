@@ -1,41 +1,50 @@
-using UnityEngine;
 using System;
 
 namespace Framework
 {
-    /// <summary>
-    /// Listens for a particular type of GameEntity to be spawned and triggers a callback.
-    /// Make sure you destroy it's no longer needed!
-    /// </summary>
-    class GameEntityListener<TTargetType> where TTargetType : GameEntity
+    public interface IGameEntityListener
     {
-        public event Action<TTargetType> Spawned;
-        public event Action<TTargetType> Removed;
+        void OnSpawn(GameEntity gameEntity);
+        void OnRemove(GameEntity gameEntity);
+        void Destroy();
+    }
 
-        public GameEntityListener()
+    public class GameEntityListener<T> : IGameEntityListener where T : GameEntity
+    {
+        private Action<T> _spawned;
+        private Action<T> _removed;
+
+        public void OnSpawn(Action<T> onSpawn)
         {
-            GameEntityManager.EntitySpawned += GameEntityManager_EntitySpawned;
-            GameEntityManager.EntityRemoved += GameEntityManager_EntityRemoved;
+            _spawned = onSpawn;
         }
 
-        private void GameEntityManager_EntitySpawned(GameEntity gameEntity)
+        public void OnRemove(Action<T> onRemove)
         {
-            var targetType = gameEntity as TTargetType;
-            if (targetType != null)
-                Spawned.InvokeSafe(targetType);
+            _removed = onRemove;
         }
 
-        private void GameEntityManager_EntityRemoved(GameEntity gameEntity)
+        void IGameEntityListener.OnSpawn(GameEntity gameEntity)
         {
-            var targetType = gameEntity as TTargetType;
-            if (targetType != null)
-                Removed.InvokeSafe(targetType);
+            if (MatchesType(gameEntity))
+                _spawned.InvokeSafe(gameEntity as T);
         }
 
-        public void Destroy()
+        void IGameEntityListener.OnRemove(GameEntity gameEntity)
         {
-            GameEntityManager.EntitySpawned -= GameEntityManager_EntitySpawned;
-            GameEntityManager.EntityRemoved -= GameEntityManager_EntityRemoved;
+            if (MatchesType(gameEntity))
+                _removed.InvokeSafe(gameEntity as T);
+        }
+
+        bool MatchesType(GameEntity gameEntity)
+        {
+            return gameEntity as T != null;
+        }
+
+        void IGameEntityListener.Destroy()
+        {
+            _spawned = null;
+            _removed = null;
         }
     }
 }
