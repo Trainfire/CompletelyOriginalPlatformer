@@ -13,7 +13,7 @@ class World : GameEntity
 {
     public event Action<TokenData> TokensChanged;
 
-    private TrackingCamera2D _trackingCamera;
+    private CameraControllerTracking2D _trackingCamera;
     private List<GameEntity> _tokens;
     private TokenData _tokenData;
 
@@ -27,7 +27,7 @@ class World : GameEntity
         var player = FindObjectOfType<Player>();
 
         // Find the tracking camera which causes the camera to follow a target.
-        _trackingCamera = FindObjectOfType<TrackingCamera2D>();
+        _trackingCamera = FindObjectOfType<CameraControllerTracking2D>();
         _trackingCamera.SetTarget(player.gameObject);
 
         // Set our camera's controller so it starts tracking the player.
