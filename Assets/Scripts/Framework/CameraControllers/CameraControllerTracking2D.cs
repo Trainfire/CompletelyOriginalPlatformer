@@ -1,7 +1,7 @@
 using UnityEngine;
 using Framework;
 
-public class TrackingCamera2D : MonoBehaviour, IGameCameraController
+public class CameraControllerTracking2D : MonoBehaviour, IGameCameraController
 {
     [Range(0f, 1f)] [SerializeField] private float _moveSpeed;
     [SerializeField] private Vector2 _offset;

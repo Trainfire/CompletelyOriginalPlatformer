@@ -54,6 +54,14 @@ namespace Framework
         }
     }
 
+    static class Vector2Ex
+    {
+        public static Vector3 ToVec3(this Vector2 v)
+        {
+            return new Vector3(v.x, v.y);
+        }
+    }
+
     static class ObjectEx
     {
         public static T FindObjectOfType<T>(Action<T> onFind = null) where T : MonoBehaviour

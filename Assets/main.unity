@@ -90,55 +90,6 @@ NavMeshSettings:
     cellSize: 0.16666667
     manualCellSize: 0
   m_NavMeshData: {fileID: 0}
---- !u!1 &173278494
-GameObject:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  serializedVersion: 4
-  m_Component:
-  - 4: {fileID: 173278495}
-  - 114: {fileID: 173278496}
-  m_Layer: 0
-  m_Name: InputMapPC
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &173278495
-Transform:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 173278494}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_Children: []
-  m_Father: {fileID: 1771890385}
-  m_RootOrder: 2
---- !u!114 &173278496
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 173278494}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3914550482c166948be1758af4486d28, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _bindings:
-  - _action: 8
-    _key: 97
-  - _action: 6
-    _key: 100
-  - _action: 20
-    _key: 32
-  - _action: 19
-    _key: 27
 --- !u!1 &239094369
 GameObject:
   m_ObjectHideFlags: 0
@@ -444,7 +395,7 @@ RectTransform:
   m_Children:
   - {fileID: 584180351}
   m_Father: {fileID: 1771890385}
-  m_RootOrder: 4
+  m_RootOrder: 3
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
@@ -542,7 +493,7 @@ Transform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_Children: []
   m_Father: {fileID: 1771890385}
-  m_RootOrder: 3
+  m_RootOrder: 2
 --- !u!114 &872902818
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1431,7 +1382,6 @@ Transform:
   m_Children:
   - {fileID: 925794234}
   - {fileID: 1917565216}
-  - {fileID: 173278495}
   - {fileID: 872902817}
   - {fileID: 785295112}
   m_Father: {fileID: 0}
