@@ -16,7 +16,6 @@ class World : GameEntity
     private TrackingCamera2D _trackingCamera;
     private List<GameEntity> _tokens;
     private TokenData _tokenData;
-    private HUD _hud;
 
     public TokenData TokenData
     {
