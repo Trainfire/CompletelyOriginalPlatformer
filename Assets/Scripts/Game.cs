@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using UnityEngine.SceneManagement;
 using Framework;
 
@@ -14,7 +14,7 @@ public class Game : MonoBehaviour
         get { return _stateManager.Listener; }
     }
 
-    private GameZoneManager _zoneManager;
+    private ZoneManager<GameZone> _zoneManager;
     public ZoneListener<GameZone> ZoneListener
     {
         get { return _zoneManager.Listener; }
@@ -49,13 +49,20 @@ public class Game : MonoBehaviour
         gameObject.GetOrAddComponent<MonoEventRelay>();
 
         // Input
-        var _inputPC = ObjectEx.FindObjectOfType<InputMapPC>();
-        InputManager.RegisterMap(_inputPC);
+        foreach (var inputMap in Object.FindObjectsOfType<InputMap>())
+        {
+            InputManager.RegisterMap(inputMap);
+        }        
 
+        // State
         _stateManager = new StateManager();
 
-        _zoneManager = gameObject.AddComponent<GameZoneManager>();
-        _zoneManager.LoadingScene = "loader";
+        // Scene Loader
+        var sceneLoader = gameObject.GetOrAddComponent<SceneLoader>();
+        sceneLoader.LoadingScene = "Loader";
+
+        // Zone
+        _zoneManager = new ZoneManager<GameZone>(sceneLoader);
         _zoneManager.Listener.ZoneChanging += Listener_ZoneChanging;
         _zoneManager.Listener.ZoneChanged += Listener_ZoneChanged;
 
@@ -98,6 +105,3 @@ public class Game : MonoBehaviour
         }
     }
 }
-
-// Unity can't instantiate types with generic parameters so we have to do this...
-class GameZoneManager : ZoneManager<GameZone> { }

@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using UnityEngine.SceneManagement;
 using System.Collections;
 
@@ -17,10 +17,12 @@ class Bootstrapper : MonoBehaviour
         var game = FindObjectOfType<Game>();
         if (game == null)
         {
+            // We're not in the 'main' scene that contains the Game, so we'll need to initialize.
             StartCoroutine(Initialize());
         }
         else if (!game.Initialized)
         {
+            // We're must be in the 'main' scene. So let's initialize the game.
             game.Initialize();
         }
     }
@@ -29,6 +31,7 @@ class Bootstrapper : MonoBehaviour
     {
         yield return SceneManager.LoadSceneAsync("Main", LoadSceneMode.Additive);
 
+        // Look for an existing bootstrapper in the freshly loaded scene. Destroy it, if one is found.
         var existingBootstrappers = FindObjectsOfType<Bootstrapper>();
         foreach (var bootstrapper in existingBootstrappers)
         {

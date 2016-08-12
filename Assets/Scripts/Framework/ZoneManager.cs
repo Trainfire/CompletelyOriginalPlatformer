@@ -1,61 +1,45 @@
-﻿using UnityEngine;
+using UnityEngine;
 using UnityEngine.SceneManagement;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using Framework;
 
-public class ZoneManager<T> : MonoBehaviour
+public class ZoneManager<T>
 {
     private IZoneHandler<T> _handler;
     private List<string> _activeScenes;
+    private SceneLoader _sceneLoader;
 
     public ZoneListener<T> Listener { get; private set; }
     public T Zone { get; private set; }
-    public string LoadingScene { get; set; }
 
-    protected virtual void Awake()
+    public ZoneManager(SceneLoader sceneLoader)
     {
         Listener = new ZoneListener<T>();
         _activeScenes = new List<string>();
         _handler = Listener;
+
+        _sceneLoader = sceneLoader;
+        _sceneLoader.LoadProgress += _handler.OnZoneLoadProgress;
     }
 
     public void SetZone(T zone, params string[] sceneNames)
     {
-        StartCoroutine(SetZoneAsync(zone, sceneNames));
-    }
-
-    IEnumerator SetZoneAsync(T zone, params string[] sceneNames)
-    {
-        SceneManager.LoadScene(LoadingScene, LoadSceneMode.Additive);
-
         _handler.OnZoneChanging();
 
         _activeScenes.ForEach(x => SceneManager.UnloadScene(x));
         _activeScenes.Clear();
 
-        int scenesLoaded = 0;
-        float totalProgress = 0f;
-        foreach (var scene in sceneNames)
+        _sceneLoader.StartCoroutine(_sceneLoader.Load(sceneNames, () =>
         {
-            _activeScenes.Add(scene);
+            // Level has finished loading. Let's finish up...
+            Zone = zone;
+            _handler.OnZoneChanged(zone);
 
-            var task = SceneManager.LoadSceneAsync(scene, LoadSceneMode.Additive);
-
-            while (!task.isDone)
-            {
-                totalProgress = (scenesLoaded + task.progress) / sceneNames.Length;
-                _handler.OnZoneLoadProgress(totalProgress);
-                yield return null;
-            }
-
-            scenesLoaded++;
-        }
-
-        Zone = zone;
-        SceneManager.UnloadScene(LoadingScene);
-        _handler.OnZoneChanged(zone);
+            // Keep track of which scenes were loaded.
+            _activeScenes.AddRange(sceneNames);
+        }));
     }
 }
 
