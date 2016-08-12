@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using UnityEngine.SceneManagement;
 using System;
 using System.Collections;
@@ -60,7 +60,7 @@ public class GameController : IInputHandler
 
     void IInputHandler.HandleInput(InputActionEvent action)
     {
-        if (action.Action == InputAction.Pause && action.Type == InputActionType.Down)
+        if (action.Action == InputMap.Pause && action.Type == InputActionType.Down)
         {
             _stateManager.ToggleState();
             Debug.Log("Game is now " + _stateManager.State);

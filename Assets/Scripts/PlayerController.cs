@@ -56,17 +56,17 @@ public class PlayerController : MonoBehaviour, IInputHandler
     {
         if (action.Type == InputActionType.Down)
         {
-            if (action.Action == InputAction.Jump)
+            if (action.Action == GameInputActions.Jump)
                 Jump();
         }
 
         if (action.Type == InputActionType.Held && !_blocked)
         {
-            if (action.Action == InputAction.Left)
+            if (action.Action == InputMap.Left)
             {
                 _facingDirection = Vector2.left;
             }
-            else if (action.Action == InputAction.Right)
+            else if (action.Action == InputMap.Right)
             {
                 _facingDirection = Vector2.right;
             }
@@ -74,7 +74,7 @@ public class PlayerController : MonoBehaviour, IInputHandler
 
         if (action.Type == InputActionType.Up)
         {
-            if (action.Action == InputAction.Left || action.Action == InputAction.Right)
+            if (action.Action == InputMap.Left || action.Action == InputMap.Right)
                 _facingDirection = Vector2.zero;
         }
     }

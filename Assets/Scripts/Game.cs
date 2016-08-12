@@ -52,11 +52,15 @@ public class Game : MonoBehaviour
         // Relay
         gameObject.GetOrAddComponent<MonoEventRelay>();
 
-        // Input
-        foreach (var inputMap in Object.FindObjectsOfType<InputMap>())
-        {
-            InputManager.RegisterMap(inputMap);
-        }        
+        // Input Bindings
+        var inputPC = gameObject.GetOrAddComponent<InputMapPC>();
+        inputPC.AddBinding(InputMap.Left, KeyCode.A);
+        inputPC.AddBinding(InputMap.Right, KeyCode.D);
+        inputPC.AddBinding(InputMap.Pause, KeyCode.Pause);
+        inputPC.AddBinding(GameInputActions.Jump, KeyCode.Space);
+
+        // Register Input Map(s)
+        InputManager.RegisterMap(inputPC);
 
         // State
         _stateManager = new StateManager();
@@ -108,4 +112,9 @@ public class Game : MonoBehaviour
 
         _gameEntityManager.LoadEntities();
     }
+}
+
+public class GameInputActions
+{
+    public const string Jump = "Jump";
 }

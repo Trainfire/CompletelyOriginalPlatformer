@@ -35,10 +35,10 @@ namespace Framework.UI
 
     public class ControlData
     {
-        public InputAction Action { get; private set; }
+        public string Action { get; private set; }
         public string Label { get; private set; }
 
-        public ControlData(InputAction action, string label)
+        public ControlData(string action, string label)
         {
             Action = action;
             Label = label;

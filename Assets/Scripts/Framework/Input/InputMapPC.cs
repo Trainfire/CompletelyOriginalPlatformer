@@ -1,53 +1,33 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 
 namespace Framework
 {
-    [System.Serializable]
-    public class InputBinding
-    {
-        [SerializeField] private InputAction _action;
-        [SerializeField] private KeyCode _key;
-
-        public InputAction Action
-        {
-            get { return _action; }
-        }
-
-        public KeyCode Key
-        {
-            get { return _key; }
-        }
-    }
-
     public class InputMapPC : InputMap
     {
-        [SerializeField] private List<InputBinding> _bindings;
-
-        private Dictionary<InputAction, KeyCode> _bindingsDict;
+        private Dictionary<string, KeyCode> _bindings;
 
         public void Awake()
         {
-            _bindingsDict = new Dictionary<InputAction, KeyCode>();
-            _bindings.ForEach(x => _bindingsDict.Add(x.Action, x.Key));
+            _bindings = new Dictionary<string, KeyCode>();
         }
 
-        public void AddBinding(InputAction action, KeyCode key)
+        public void AddBinding(string action, KeyCode key)
         {
-            if (_bindingsDict.ContainsKey(action))
+            if (_bindings.ContainsKey(action))
             {
                 Debug.LogErrorFormat("InputMapPC: '{0}' is already bound to '{1}'", action, key);
             }
             else
             {
-                _bindingsDict.Add(action, key);
+                _bindings.Add(action, key);
             }
         }
 
         public void LateUpdate()
         {
-            foreach (var kvp in _bindingsDict)
+            foreach (var kvp in _bindings)
             {
                 if (Input.anyKey)
                 {
@@ -73,19 +53,19 @@ namespace Framework
 
             if (Input.GetAxis("Mouse ScrollWheel") > 0f)
             {
-                FireTrigger(new InputActionEvent(InputAction.ScrollUp, InputActionType.Down));
+                FireTrigger(new InputActionEvent(ScrollUp, InputActionType.Down));
             }
 
             if (Input.GetAxis("Mouse ScrollWheel") < 0f)
             {
-                FireTrigger(new InputActionEvent(InputAction.ScrollDown, InputActionType.Down));
+                FireTrigger(new InputActionEvent(ScrollDown, InputActionType.Down));
             }
 
             if (Input.GetMouseButtonDown(0))
-                FireTrigger(new InputActionEvent(InputAction.MouseLeft, InputActionType.Down));
+                FireTrigger(new InputActionEvent(LeftClick, InputActionType.Down));
 
             if (Input.GetMouseButtonDown(1))
-                FireTrigger(new InputActionEvent(InputAction.MouseRight, InputActionType.Down));
+                FireTrigger(new InputActionEvent(RightClick, InputActionType.Down));
         }
     }
 }

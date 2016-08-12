@@ -22,10 +22,10 @@ namespace Framework.UI
         {
             lists = new List<DataViewList>();
 
-            holdBehaviourDown = new InputHoldBehaviour(InputAction.Down);
+            holdBehaviourDown = new InputHoldBehaviour(InputMap.Down);
             holdBehaviourDown.OnTrigger += HoldBehaviourDown_OnTrigger;
 
-            holdBehaviourUp = new InputHoldBehaviour(InputAction.Up);
+            holdBehaviourUp = new InputHoldBehaviour(InputMap.Up);
             holdBehaviourUp.OnTrigger += HoldBehaviourUp_OnTrigger;
         }
 
@@ -104,22 +104,22 @@ namespace Framework.UI
             {
                 switch (action.Action)
                 {
-                    case InputAction.Up:
+                    case InputMap.Up:
                         lists[index].MovePrev();
                         break;
-                    case InputAction.Down:
+                    case InputMap.Down:
                         lists[index].MoveNext();
                         break;
-                    case InputAction.ScrollUp:
+                    case InputMap.ScrollUp:
                         lists[index].MovePrev();
                         break;
-                    case InputAction.ScrollDown:
+                    case InputMap.ScrollDown:
                         lists[index].MoveNext();
                         break;
-                    case InputAction.Right:
+                    case InputMap.Right:
                         FocusNext();
                         break;
-                    case InputAction.Left:
+                    case InputMap.Left:
                         FocusPrev();
                         break;
                     default:
