@@ -28,16 +28,14 @@ public class ZoneManager<T>
     {
         _handler.OnZoneChanging();
 
-        _activeScenes.ForEach(x => SceneManager.UnloadScene(x));
-        _activeScenes.Clear();
-
-        _sceneLoader.StartCoroutine(_sceneLoader.Load(sceneNames, () =>
+        _sceneLoader.StartCoroutine(_sceneLoader.Load(_activeScenes.ToArray(), sceneNames, () =>
         {
             // Level has finished loading. Let's finish up...
             Zone = zone;
             _handler.OnZoneChanged(zone);
 
             // Keep track of which scenes were loaded.
+            _activeScenes.Clear();
             _activeScenes.AddRange(sceneNames);
         }));
     }

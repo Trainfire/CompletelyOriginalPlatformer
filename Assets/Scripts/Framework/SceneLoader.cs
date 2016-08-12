@@ -7,24 +7,31 @@ namespace Framework
 {
     public class SceneLoader : MonoBehaviour
     {
-        public event Action LoadCompleted;
         public event Action<float> LoadProgress;
 
         public string LoadingScene { get; set; }
 
-        public IEnumerator Load(string[] sceneNames, Action onLoadComplete)
+        public IEnumerator Load(string[] targetUnloadScenes, string[] targetLoadScenes, Action onLoadComplete)
         {
             SceneManager.LoadScene(LoadingScene, LoadSceneMode.Additive);
 
+            // Wait for the end of the current frame to finish to ensure that everything has cleaned up.
+            yield return new WaitForEndOfFrame();
+
+            for (int i = 0; i < targetUnloadScenes.Length; i++)
+            {
+                SceneManager.UnloadScene(targetUnloadScenes[i]);
+            }
+
             int scenesLoaded = 0;
             float totalProgress = 0f;
-            foreach (var scene in sceneNames)
+            foreach (var scene in targetLoadScenes)
             {
                 var task = SceneManager.LoadSceneAsync(scene, LoadSceneMode.Additive);
 
                 while (!task.isDone)
                 {
-                    totalProgress = (scenesLoaded + task.progress) / sceneNames.Length;
+                    totalProgress = (scenesLoaded + task.progress) / targetLoadScenes.Length;
                     LoadProgress.InvokeSafe(totalProgress);
                     yield return null;
                 }

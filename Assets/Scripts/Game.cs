@@ -7,6 +7,10 @@ public class Game : MonoBehaviour
     private ConsoleController _console;
     private GameEntityManager _gameEntityManager;
     private GameController _gameController;
+    public GameController GameController
+    {
+        get { return _gameController; }
+    }
 
     private StateManager _stateManager;
     public StateListener StateListener
@@ -96,12 +100,12 @@ public class Game : MonoBehaviour
         if (Camera != null)
             Camera.Initialize(this);
 
-        _gameEntityManager.LoadEntities();
-
         var controllerDependants = GameObject.FindObjectsOfType<GameControllerDependant>();
         for (int i = 0; i < controllerDependants.Length; i++)
         {
             controllerDependants[i].Initialize(_gameController);
         }
+
+        _gameEntityManager.LoadEntities();
     }
 }

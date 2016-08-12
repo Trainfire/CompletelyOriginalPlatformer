@@ -1,6 +1,7 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Framework
 {
@@ -30,7 +31,7 @@ namespace Framework
         public void Cleanup()
         {
             // GameEntities will be destroyed on level load, so just unhook the event here.
-            _gameEntities.ForEach(x => x.Destroyed -= GameEntity_Destroyed);
+            _gameEntities.ToList().ForEach(x => Unregister(x));
             _gameEntities.Clear();
         }
 
