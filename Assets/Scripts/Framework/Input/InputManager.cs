@@ -12,6 +12,7 @@ namespace Framework
         Down,
         Up,
         Held,
+        Axis,
     }
 
     public interface IInputHandler
@@ -23,11 +24,13 @@ namespace Framework
     {
         public string Action { get; private set; }
         public InputActionType Type { get; private set; }
+        public float Delta { get; private set; }
 
-        public InputActionEvent(string action, InputActionType type)
+        public InputActionEvent(string action, InputActionType type, float delta = 0f)
         {
             Action = action;
             Type = type;
+            Delta = delta;
         }
     }
 
@@ -73,7 +76,7 @@ namespace Framework
             }
         }
 
-        static void Relay(object sender, InputActionEvent action)
+        private static void Relay(object sender, InputActionEvent action)
         {
             handlers.ForEach(x => x.HandleInput(action));
         }

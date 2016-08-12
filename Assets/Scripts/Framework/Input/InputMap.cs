@@ -7,6 +7,8 @@ namespace Framework
     public abstract class InputMap : MonoBehaviour
     {
         #region Core Generic Bindings
+        public const string Horizontal = "Horizontal";
+        public const string Vertical = "Vertical";
         public const string Up = "Up";
         public const string Right = "Right";
         public const string Down = "Down";
