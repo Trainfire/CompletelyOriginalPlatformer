@@ -40,7 +40,14 @@ public class GameController : IInputHandler
 
     public void QuitGame()
     {
-        throw new NotImplementedException();
+        if (Application.isEditor)
+        {
+            UnityEditor.EditorApplication.isPlaying = false;
+        }
+        else
+        {
+            Application.Quit();
+        }
     }
 
     public void LoadMainMenu()
