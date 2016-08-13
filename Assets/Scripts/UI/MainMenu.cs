@@ -2,7 +2,7 @@ using UnityEngine;
 using Framework;
 using System;
 
-public class MainMenu : GameControllerDependant
+public class MainMenu : GameEntity
 {
     [SerializeField] private UIMainMenu _view;
 
@@ -16,16 +16,18 @@ public class MainMenu : GameControllerDependant
 
     private void View_PlayPressed()
     {
-        GameController.StartGame();
+        Game.Controller.StartGame();
     }
 
     private void View_QuitPressed()
     {
-        GameController.QuitGame();
+        Game.Controller.QuitGame();
     }
 
-    private void OnDestroy()
+    protected override void OnDestroy()
     {
+        base.OnDestroy();
+
         _view.PlayPressed -= View_PlayPressed;
         _view.QuitPressed -= View_QuitPressed;
     }

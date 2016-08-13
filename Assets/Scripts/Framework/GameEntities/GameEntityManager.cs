@@ -26,7 +26,7 @@ namespace Framework
             // TODO: Get objects by IGameEntity instead of concrete class. Need to investigate how to do this.
             foreach (var gameEntity in GameObject.FindObjectsOfType<GameEntity>())
             {
-                Register(gameEntity);
+                 Register(gameEntity);
             }
         }
 
@@ -37,8 +37,11 @@ namespace Framework
             _listeners.Clear();
 
             // GameEntities will be destroyed on level load, so just unhook the event here.
-            _gameEntities.ToList().ForEach(x => Unregister(x));
-            _gameEntities.Clear();
+            foreach (var gameEntity in _gameEntities.ToList())
+            {
+                Unregister(gameEntity);
+                _gameEntities.Remove(gameEntity);
+            }
         }
 
         private static void Register(GameEntity gameEntity)

@@ -6,10 +6,10 @@ public class Game : MonoBehaviour
 {
     private ConsoleController _console;
     private GameEntityManager _gameEntityManager;
-    private GameController _gameController;
-    public GameController GameController
+    private GameController _controller;
+    public GameController Controller
     {
-        get { return _gameController; }
+        get { return _controller; }
     }
 
     private StateManager _stateManager;
@@ -31,7 +31,7 @@ public class Game : MonoBehaviour
     {
         if (Initialized)
         {
-            Debug.LogWarning("Game has already been initialized. This should not happen!");
+            Debug.LogError("Game has already been initialized. This should not happen!");
             return;
         }
 
@@ -76,17 +76,17 @@ public class Game : MonoBehaviour
 
         _gameEntityManager = new GameEntityManager(this);
 
-        // Allows the control of the game. IE, Resuming, Pausing, Load Level, etc.
-        _gameController = new GameController(this, _stateManager, _zoneManager);
+        // Allows the control of the game, such as level loading, resuming and pausing the game.
+        _controller = new GameController(this, _stateManager, _zoneManager);
 
-        // Determine which zone to go to. Not the cleanest implementation but w/e.
+        // Determines where to go first.
         if (sceneName != null)
         {
-            _gameController.LoadLevel(sceneName);
+            _controller.LoadLevel(sceneName);
         }
         else
         {
-            _gameController.LoadMainMenu();
+            _controller.LoadMainMenu();
         }
     }
 
@@ -103,12 +103,6 @@ public class Game : MonoBehaviour
         Camera = gameCamera;
         if (Camera != null)
             Camera.Initialize(this);
-
-        var controllerDependants = GameObject.FindObjectsOfType<GameControllerDependant>();
-        for (int i = 0; i < controllerDependants.Length; i++)
-        {
-            controllerDependants[i].Initialize(_gameController);
-        }
 
         _gameEntityManager.LoadEntities();
     }

@@ -62,7 +62,7 @@ class World : GameEntity
 
         if (_tokenData.Collected == _tokenData.Total)
         {
-            Game.GameController.LoadMainMenu();
+            Game.Controller.LoadMainMenu();
         }
     }
 

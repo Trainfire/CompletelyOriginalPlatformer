@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Framework;
 using Framework.UI;
 
-public class HUD : GameControllerDependant
+public class HUD : GameEntity
 {
     [SerializeField] private HUDWorldPopups _hudPopups;
     [SerializeField] private HUDTokens _hudTokens;
@@ -48,8 +48,9 @@ public class HUD : GameControllerDependant
         }
     }
 
-    public void OnDestroy()
+    protected override void OnDestroy()
     {
+        base.OnDestroy();
         _hudElements.Clear();
     }
 }
