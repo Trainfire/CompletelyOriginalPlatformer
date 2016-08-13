@@ -1,6 +1,4 @@
 using UnityEngine;
-using System.Collections.Generic;
-using Framework;
 
 namespace Framework.UI
 {
@@ -14,10 +12,10 @@ namespace Framework.UI
         private void Awake()
         {
             _buttons = new CyclicalList<UIButton>();
+            _buttons.Wrapped = true;
             _buttons.Moved += OnMove;
 
-            _last = _buttons.Current;
-            _last.Selected(true);
+            _prototype.gameObject.SetActive(false);
         }
 
         private void OnMove(object sender, CyclicalListEvent<UIButton> cycleEvent)
@@ -27,9 +25,20 @@ namespace Framework.UI
             _last = cycleEvent.Data;
         }
 
-        public void Add(UIButton button)
+        public UIButton Add(string label)
         {
-            _buttons.Add(button);
+            var instance = UIUtility.Add<UIButton>(transform, _prototype.gameObject);
+            instance.Label = label;
+
+            if (_last == null)
+            {
+                _last = instance;
+                _last.Selected(true);
+            }
+
+            _buttons.Add(instance);
+
+            return instance;
         }
 
         public void Prev()
@@ -40,6 +49,12 @@ namespace Framework.UI
         public void Next()
         {
             _buttons.MoveNext();
+        }
+
+        public void Update()
+        {
+            if (_buttons.Current != null)
+                _buttons.Current.Button.Select();
         }
     }
 }

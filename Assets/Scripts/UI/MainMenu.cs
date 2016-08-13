@@ -39,10 +39,10 @@ public class MainMenu : GameEntity, IInputHandler
         if (action.Type == InputActionType.Down)
         {
             if (action.Action == InputMap.Up)
-                _view.Up();
+                _view.ButtonList.Prev();
 
             if (action.Action == InputMap.Down)
-                _view.Down();
+                _view.ButtonList.Next();
         }
     }
 }

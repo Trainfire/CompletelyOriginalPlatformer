@@ -124,7 +124,7 @@ namespace Framework
 
         public override void MoveToEnd()
         {
-            Index = list.Count - 1;
+            Index = Mathf.Clamp(list.Count - 1, 0, list.Count - 1);
             OnMove(CycleType.ToEnd);
         }
 

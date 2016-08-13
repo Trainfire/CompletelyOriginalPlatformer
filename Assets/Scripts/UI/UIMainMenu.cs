@@ -9,18 +9,22 @@ public class UIMainMenu : MonoBehaviour
     public event Action PlayPressed;
     public event Action QuitPressed;
 
-    public UIMenuButton Play;
-    public UIMenuButton Quit;
-
-    private UIMenuButton _currentButton;
-
-    private void Awake()
+    [SerializeField] private ButtonList _buttonList;
+    public ButtonList ButtonList
     {
-        Play.Pressed += Play_Pressed;
-        Quit.Pressed += Quit_Pressed;
+        get { return _buttonList; }
+    }
 
-        _currentButton = Play;
-        _currentButton.Selected(true);
+    private UIMenuButton _play;
+    private UIMenuButton _quit;
+
+    private void Start()
+    {
+        _play = _buttonList.Add("Play") as UIMenuButton;
+        _quit = _buttonList.Add("Quit") as UIMenuButton;
+
+        _play.Pressed += Play_Pressed;
+        _quit.Pressed += Quit_Pressed;
     }
 
     private void Play_Pressed(UIButton obj)
@@ -33,37 +37,9 @@ public class UIMainMenu : MonoBehaviour
         QuitPressed.InvokeSafe();
     }
 
-    public void Update()
+    private void OnDestroy()
     {
-        if (_currentButton != null)
-        {
-            _currentButton.Button.Select();
-        }
-    }
-
-    public void Up()
-    {
-        Move();
-    }
-
-    public void Down()
-    {
-        Move();
-    }
-
-    private void Move()
-    {
-        _currentButton.Selected(false);
-
-        if (_currentButton == Play)
-        {
-            _currentButton = Quit;
-            Quit.Selected(true);
-        }
-        else
-        {
-            _currentButton = Play;
-            Play.Selected(true);
-        }
+        _play.Pressed -= Play_Pressed;
+        _quit.Pressed -= Quit_Pressed;
     }
 }
