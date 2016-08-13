@@ -33,7 +33,7 @@ namespace Framework
     }
 
     /// <summary>
-    /// Allows a referenced list to be traversed via MoveNext and MovePrev.
+    /// Allows a list to be traversed via MoveNext and MovePrev.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     public class CyclicalList<T> : CyclicalList
@@ -45,17 +45,38 @@ namespace Framework
         /// and will automatically return to the last item when moving backwards from the first item.
         /// </summary>
         public bool Wrapped { get; set; }
+        public int Index { get; private set; }
+
+        public T Current
+        {
+            get { return list.Count != 0 ? list[Index] : default(T); }
+        }
 
         private List<T> list;
-        private int index;
 
         /// <summary>
         /// 
         /// </summary>
         /// <param name="list">The reference list to cycle through.</param>
-        public CyclicalList(List<T> list)
+        public CyclicalList()
         {
-            this.list = list;
+            list = new List<T>();
+        }
+
+        public void Add(T data)
+        {
+            if (!list.Contains(data))
+            {
+                list.Add(data);
+            }
+        }
+
+        public void Remove(T data)
+        {
+            if (list.Contains(data))
+            {
+                list.Remove(data);
+            }
         }
 
         /// <summary>
@@ -65,15 +86,15 @@ namespace Framework
         {
             if (list.Contains(data))
             {
-                index = list.IndexOf(data);
+                Index = list.IndexOf(data);
             }
         }
 
         public override void MoveNext()
         {
-            if (index < list.Count - 1)
+            if (Index < list.Count - 1)
             {
-                index++;
+                Index++;
                 OnMove(CycleType.Forward);
             }
             else if (Wrapped)
@@ -84,9 +105,9 @@ namespace Framework
 
         public override void MovePrev()
         {
-            if (index > 0)
+            if (Index > 0)
             {
-                index--;
+                Index--;
                 OnMove(CycleType.Backward);
             }
             else if (Wrapped)
@@ -97,20 +118,20 @@ namespace Framework
 
         public override void MoveToStart()
         {
-            index = 0;
+            Index = 0;
             OnMove(CycleType.ToStart);
         }
 
         public override void MoveToEnd()
         {
-            index = list.Count - 1;
+            Index = list.Count - 1;
             OnMove(CycleType.ToEnd);
         }
 
         private void OnMove(CycleType moveType)
         {
             if (Moved != null)
-                Moved(this, new CyclicalListEvent<T>(moveType, list[index]));
+                Moved(this, new CyclicalListEvent<T>(moveType, list[Index]));
         }
     }
 }

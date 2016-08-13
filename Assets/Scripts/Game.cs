@@ -54,6 +54,8 @@ public class Game : MonoBehaviour
 
         // Input Bindings
         var inputPC = gameObject.GetOrAddComponent<InputMapPC>();
+        inputPC.AddBinding(InputMap.Up, KeyCode.W);
+        inputPC.AddBinding(InputMap.Down, KeyCode.S);
         inputPC.AddBinding(InputMap.Left, KeyCode.A);
         inputPC.AddBinding(InputMap.Right, KeyCode.D);
         inputPC.AddBinding(InputMap.Pause, KeyCode.Escape);
