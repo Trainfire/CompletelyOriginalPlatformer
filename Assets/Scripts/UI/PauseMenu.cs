@@ -1,30 +1,37 @@
 using UnityEngine;
 using Framework;
-using System;
+using Framework.UI;
 
-public class PauseMenu : GameEntity
+public class PauseMenu : MenuBase, IInputHandler
 {
-    [SerializeField] private UIPauseMenu _view;
+    private UIButton _resume;
+    private UIButton _quit;
 
     protected override void OnInitialize()
     {
-        _view.gameObject.SetActive(false);
-        _view.ResumePressed += View_ResumePressed;
-        _view.QuitPressed += View_QuitPressed;
+        base.OnInitialize();
+
+        gameObject.SetActive(false);
+
+        _resume = Buttons.Add("Resume");
+        _resume.Pressed += View_ResumePressed;
+
+        _quit = Buttons.Add("Quit");
+        _quit.Pressed += View_QuitPressed;
     }
 
     protected override void OnStateChanged(State state)
     {
         base.OnStateChanged(state);
-        _view.gameObject.SetActive(state == State.Paused);
+        gameObject.SetActive(state == State.Paused);
     }
 
-    private void View_ResumePressed()
+    private void View_ResumePressed(UIButton sender)
     {
         Game.Controller.Resume();
     }
 
-    private void View_QuitPressed()
+    private void View_QuitPressed(UIButton sender)
     {
         Game.Controller.LoadMainMenu();
     }
@@ -32,7 +39,7 @@ public class PauseMenu : GameEntity
     protected override void OnDestroy()
     {
         base.OnDestroy();
-        _view.ResumePressed -= View_ResumePressed;
-        _view.QuitPressed -= View_QuitPressed;
+        _resume.Pressed -= View_ResumePressed;
+        _quit.Pressed -= View_QuitPressed;
     }
 }

@@ -4,7 +4,7 @@ using Framework;
 using Framework.Components;
 using System;
 
-public class Player : GameEntity, IInputHandler
+public class Player : GameEntity
 {
     public bool InputEnabled { get; set; }
 
@@ -20,7 +20,6 @@ public class Player : GameEntity, IInputHandler
 
         _playerController.Landed += PlayerController_Landed;
 
-        InputManager.RegisterHandler(this);
         InputEnabled = true;
     }
 
@@ -46,14 +45,15 @@ public class Player : GameEntity, IInputHandler
     protected override void OnDestroy()
     {
         base.OnDestroy();
-        InputManager.UnregisterHandler(this);
 
         if (_playerController != null)
             _playerController.Landed -= PlayerController_Landed;
     }
 
-    void IInputHandler.HandleInput(InputActionEvent action)
+    public override void HandleInput(InputActionEvent action)
     {
+        base.HandleInput(action);
+
         if (!InputEnabled)
             return;
 

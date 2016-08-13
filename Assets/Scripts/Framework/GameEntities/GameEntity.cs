@@ -8,7 +8,7 @@ namespace Framework
         void Initialize(Game game);
     }
 
-    public class GameEntity : MonoBehaviourEx, IGameEntity
+    public class GameEntity : MonoBehaviourEx, IGameEntity, IInputHandler
     {
         public event Action<GameEntity> Destroyed;
 
@@ -24,17 +24,22 @@ namespace Framework
             Game = game;
             Game.StateListener.StateChanged += OnStateChanged;
 
+            InputManager.RegisterHandler(this);
+
             OnInitialize();
         }
 
         protected virtual void OnInitialize() { }
         protected virtual void OnStateChanged(State state) { }
+        public virtual void HandleInput(InputActionEvent action) { }
 
         /// <summary>
         /// Called when the GameObject is destroyed. If override, you must call the base method!
         /// </summary>
         protected virtual void OnDestroy()
         {
+            InputManager.UnregisterHandler(this);
+
             if (Destroyed != null)
                 Destroyed(this);
 

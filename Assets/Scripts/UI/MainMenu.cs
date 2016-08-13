@@ -1,25 +1,28 @@
 using UnityEngine;
 using Framework;
-using System;
+using Framework.UI;
 
-public class MainMenu : GameEntity, IInputHandler
+public class MainMenu : MenuBase, IInputHandler
 {
-    [SerializeField] private UIMainMenu _view;
+    private UIButton _play;
+    private UIButton _quit;
 
     protected override void OnInitialize()
     {
-        InputManager.RegisterHandler(this);
+        base.OnInitialize();
+        _play = Buttons.Add("Play");
+        _quit = Buttons.Add("Quit");
 
-        _view.PlayPressed += View_PlayPressed;
-        _view.QuitPressed += View_QuitPressed;
+        _play.Pressed += View_PlayPressed;
+        _quit.Pressed += View_QuitPressed;
     }
 
-    private void View_PlayPressed()
+    private void View_PlayPressed(UIButton sender)
     {
         Game.Controller.StartGame();
     }
 
-    private void View_QuitPressed()
+    private void View_QuitPressed(UIButton sender)
     {
         Game.Controller.QuitGame();
     }
@@ -27,22 +30,7 @@ public class MainMenu : GameEntity, IInputHandler
     protected override void OnDestroy()
     {
         base.OnDestroy();
-
-        InputManager.UnregisterHandler(this);
-
-        _view.PlayPressed -= View_PlayPressed;
-        _view.QuitPressed -= View_QuitPressed;
-    }
-
-    void IInputHandler.HandleInput(InputActionEvent action)
-    {
-        if (action.Type == InputActionType.Down)
-        {
-            if (action.Action == InputMap.Up)
-                _view.ButtonList.Prev();
-
-            if (action.Action == InputMap.Down)
-                _view.ButtonList.Next();
-        }
+        _play.Pressed -= View_PlayPressed;
+        _quit.Pressed -= View_QuitPressed;
     }
 }
