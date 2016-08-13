@@ -56,7 +56,7 @@ public class PlayerController : MonoBehaviour, IInputHandler
     {
         if (action.Type == InputActionType.Down)
         {
-            if (action.Action == GameInputActions.Jump)
+            if (action.Action == MyGameInputActions.Jump)
                 Jump();
         }
 

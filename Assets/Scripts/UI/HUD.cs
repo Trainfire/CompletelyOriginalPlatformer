@@ -1,7 +1,6 @@
 using UnityEngine;
 using System.Collections.Generic;
 using Framework;
-using Framework.UI;
 
 public class HUD : GameEntity
 {
