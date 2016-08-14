@@ -76,6 +76,9 @@ namespace Framework
             // Allows the control of the game, such as level loading, resuming and pausing the game.
             _controller = new GameController(this, _stateManager, _zoneManager);
 
+            // Audio
+            Services.Provide(FindObjectOfType<AudioSystem>());
+
             // Game implementation
             OnInitialize(args);
         }
