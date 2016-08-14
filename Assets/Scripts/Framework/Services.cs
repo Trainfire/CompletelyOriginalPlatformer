@@ -19,11 +19,6 @@ namespace Framework
         }
     }
 
-    public class AudioSystemSource
-    {
-        // Dummy class for now.
-    }
-
     public interface IAudioSystem
     {
         void PlayMusic(AudioClip audioClip, bool isLooping = false);
