@@ -1,26 +1,11 @@
 using UnityEngine;
-using System;
-using System.Collections.Generic;
+using UnityEngine.Assertions;
 using Framework;
-
-public struct TokenData
-{
-    public int Collected { get; set; }
-    public int Total { get; set; }
-}
 
 class World : GameEntity
 {
-    public event Action<TokenData> TokensChanged;
-
     private CameraControllerTracking2D _trackingCamera;
-    private List<GameEntity> _tokens;
-    private TokenData _tokenData;
-
-    public TokenData TokenData
-    {
-        get { return _tokenData; }
-    }
+    private TokenListener _tokenListener;
 
     protected override void OnInitialize()
     {
@@ -33,41 +18,19 @@ class World : GameEntity
         // Set our camera's controller so it starts tracking the player.
         Game.Camera.SetController(_trackingCamera);
 
-        // Find all the tokens.
-        _tokens = new List<GameEntity>();
-        foreach (var token in FindObjectsOfType<Token>())
-        {
-            _tokens.Add(token);
-            token.Collected += Token_Collected;
-        }
-        
-        // Cache how many tokens there were at level start.
-        _tokenData.Total = _tokens.Count;
-
-        // For those who care...
-        OnTokensChanged();
+        _tokenListener = FindObjectOfType<TokenListener>();
+        _tokenListener.AllCollected += TokenListener_AllCollected;
     }
 
-    private void Token_Collected(Token token)
+    private void TokenListener_AllCollected(TokenListener obj)
     {
-        // Cleanup.
-        token.Collected -= Token_Collected;
-        _tokens.Remove(token);
-        Destroy(token.gameObject);
-
-        _tokenData.Collected++;
-
-        // Tell anything that's interested.
-        OnTokensChanged();
-
-        if (_tokenData.Collected == _tokenData.Total)
-        {
-            Game.Controller.LoadMainMenu();
-        }
+        Game.Controller.LoadMainMenu();
     }
 
-    private void OnTokensChanged()
+    protected override void OnDestroy()
     {
-        TokensChanged.InvokeSafe(_tokenData);
+        base.OnDestroy();
+        if (_tokenListener != null)
+            _tokenListener.AllCollected -= TokenListener_AllCollected;
     }
 }

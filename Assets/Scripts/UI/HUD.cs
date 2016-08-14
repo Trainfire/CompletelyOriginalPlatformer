@@ -16,17 +16,17 @@ public class HUD : GameEntity
         _hudElements.Add(_hudTokens.gameObject);
 
         // Listen for the World to be spawned.
-        var _worldListener = GameEntityManager.AddListener<World>();
-        _worldListener.OnSpawn(WorldListener_Spawned);
-        _worldListener.OnRemove(WorldListener_Removed);
+        var _worldListener = GameEntityManager.AddListener<TokenListener>();
+        _worldListener.OnSpawn(TokenListener_Spawned);
+        _worldListener.OnRemove(TokenListener_Removed);
     }
 
-    private void WorldListener_Removed(World obj)
+    private void TokenListener_Removed(TokenListener obj)
     {
         obj.TokensChanged -= UpdateTokenHUD;
     }
 
-    private void WorldListener_Spawned(World world)
+    private void TokenListener_Spawned(TokenListener world)
     {
         world.TokensChanged += UpdateTokenHUD;
 
