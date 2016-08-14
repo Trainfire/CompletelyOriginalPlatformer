@@ -11,11 +11,11 @@ namespace Framework
         [SerializeField] private AudioMixer _mixer;
         [SerializeField] private AudioSource _musicSource;
 
-        private List<AudioSource> _sounds;
+        private List<AudioSource> _liveSounds;
 
         private void Awake()
         {
-            _sounds = new List<AudioSource>();
+            _liveSounds = new List<AudioSource>();
         }
 
         void IAudioSystem.PlayMusic(AudioClip audioClip, bool isLooping)
@@ -51,7 +51,7 @@ namespace Framework
 
         void IAudioSystem.StopAllSounds()
         {
-            _sounds.ToList().ForEach(s =>
+            _liveSounds.ToList().ForEach(s =>
             {
                 s.Stop();
                 UnregisterSoundSource(s);
@@ -60,7 +60,7 @@ namespace Framework
 
         void IAudioSystem.StopSound(AudioSource source)
         {
-            if (_sounds.Contains(source))
+            if (_liveSounds.Contains(source))
             {
                 UnregisterSoundSource(source);
             }
@@ -105,26 +105,32 @@ namespace Framework
 
         private void RegisterSoundSource(AudioSource source)
         {
-            // Listen to the audio source so we can tell when it's finished playing.
+            // Listen to the audio source so we can tell when it's finished playing and when it's destroyed.
             var listener = source.gameObject.AddComponent<AudioSourceListener>();
-            listener.FinishedPlaying += Listener_FinishedPlaying;
+            listener.FinishedPlaying += Listener_Event;
+            listener.Destroyed += Listener_Event;
+            listener.SetAudioSource(source);
 
-            _sounds.Add(source);
+            _liveSounds.Add(source);
         }
 
-        private void Listener_FinishedPlaying(AudioSourceListener listener)
+        private void Listener_Event(AudioSourceListener listener)
         {
+            listener.FinishedPlaying -= Listener_Event;
+            listener.Destroyed -= Listener_Event;
+
             Destroy(listener);
+
             UnregisterSoundSource(listener.AudioSource);
         }
 
         private void UnregisterSoundSource(AudioSource source)
         {
-            if (_sounds.Contains(source))
+            if (_liveSounds.Contains(source))
             {
                 source.Stop();
                 Destroy(source);
-                _sounds.Remove(source);
+                _liveSounds.Remove(source);
             }
             else
             {
