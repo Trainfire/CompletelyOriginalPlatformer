@@ -4,7 +4,7 @@ using Framework;
 using Framework.Components;
 using System;
 
-public class Player : GameEntity
+public class Player : WorldEntity
 {
     public bool InputEnabled { get; set; }
 
@@ -34,7 +34,7 @@ public class Player : GameEntity
     {
         if (Mathf.Abs(landEvent.Velocity) > 10f)
         {
-            _landEffect = Game.Camera.AddScreenEffect<ScreenShake>();
+            _landEffect = World.Camera.AddScreenEffect<ScreenShake>();
             _landEffect.Amplitude = Mathf.Abs(landEvent.Velocity) / 100f;
             _landEffect.Duration = 0.5f;
             _landEffect.Frequency = 0.01f;
@@ -50,7 +50,7 @@ public class Player : GameEntity
             _playerController.Landed -= PlayerController_Landed;
     }
 
-    public override void HandleInput(InputActionEvent action)
+    protected override void HandleInput(InputActionEvent action)
     {
         base.HandleInput(action);
 

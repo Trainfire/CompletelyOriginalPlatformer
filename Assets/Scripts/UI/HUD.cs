@@ -1,22 +1,23 @@
 using UnityEngine;
 using System.Collections.Generic;
+using System.Linq;
 using Framework;
 
-public class HUD : GameEntity
+public class HUD : WorldEntity
 {
     [SerializeField] private HUDWorldPopups _hudPopups;
     [SerializeField] private HUDTokens _hudTokens;
 
-    private List<GameObject> _hudElements;
+    private List<IHUDWorldElement> _hudElements;
 
     protected override void OnInitialize()
     {
-        _hudElements = new List<GameObject>();
-        _hudElements.Add(_hudPopups.gameObject);
-        _hudElements.Add(_hudTokens.gameObject);
+        _hudElements = new List<IHUDWorldElement>();
+        _hudElements.Add(_hudPopups);
+        _hudElements.ForEach(x => x.Initialize(World.Entities));
 
         // Listen for the World to be spawned.
-        var _worldListener = GameEntityManager.AddListener<TokenListener>();
+        var _worldListener = World.Entities.AddListener<TokenListener>();
         _worldListener.OnSpawn(TokenListener_Spawned);
         _worldListener.OnRemove(TokenListener_Removed);
     }

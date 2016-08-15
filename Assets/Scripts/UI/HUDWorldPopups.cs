@@ -1,4 +1,5 @@
 ﻿using System;
+using Framework;
 using Framework.UI;
 
 public class HUDWorldPopups : HUDWorldElement<WorldPopup>
@@ -7,9 +8,9 @@ public class HUDWorldPopups : HUDWorldElement<WorldPopup>
 
     private UIWorldPopup _popupInstance;
 
-    protected override void Awake()
+    protected override void OnInitialize(WorldEntityManager worldEntityManager)
     {
-        base.Awake();
+        base.OnInitialize(worldEntityManager);
         _popupInstance = UIUtility.Add<UIWorldPopup>(transform, Prototype.gameObject);
         _popupInstance.gameObject.SetActive(false);
     }

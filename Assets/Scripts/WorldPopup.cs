@@ -2,7 +2,7 @@ using UnityEngine;
 using System;
 using Framework;
 
-public class WorldPopup : GameEntity
+public class WorldPopup : WorldEntity
 {
     public event Action<WorldPopup> TriggerEnter;
     public event Action<WorldPopup> TriggerLeave;

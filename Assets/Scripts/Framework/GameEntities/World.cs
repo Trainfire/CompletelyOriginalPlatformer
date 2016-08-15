@@ -2,13 +2,19 @@ using UnityEngine;
 using UnityEngine.Assertions;
 using Framework;
 
-class World : GameEntity
+public class World : GameEntity
 {
     private CameraControllerTracking2D _trackingCamera;
     private TokenListener _tokenListener;
 
+    public GameCamera Camera { get; private set; }
+    public WorldEntityManager Entities { get; private set; }
+
     protected override void OnInitialize()
     {
+        Entities = new WorldEntityManager(this, Game.StateListener);
+        Entities.RegisterAllEntities();
+
         var player = FindObjectOfType<Player>();
 
         // Find the tracking camera which causes the camera to follow a target.
@@ -16,9 +22,10 @@ class World : GameEntity
         _trackingCamera.SetTarget(player.gameObject);
 
         // Set our camera's controller so it starts tracking the player.
-        Game.Camera.SetController(_trackingCamera);
+        Camera = FindObjectOfType<GameCamera>();
+        Camera.SetController(_trackingCamera);
 
-        _tokenListener = FindObjectOfType<TokenListener>();
+        _tokenListener = Entities.Get<TokenListener>();
         _tokenListener.AllCollected += TokenListener_AllCollected;
     }
 
@@ -30,7 +37,11 @@ class World : GameEntity
     protected override void OnDestroy()
     {
         base.OnDestroy();
+
         if (_tokenListener != null)
             _tokenListener.AllCollected -= TokenListener_AllCollected;
+
+        if (Entities != null)
+            Entities.Cleanup();
     }
 }

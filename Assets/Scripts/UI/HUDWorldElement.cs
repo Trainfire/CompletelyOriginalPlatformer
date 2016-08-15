@@ -2,38 +2,46 @@ using UnityEngine;
 using Framework;
 using System.Collections.Generic;
 
+public interface IHUDWorldElement
+{
+    void Initialize(WorldEntityManager worldEntityManager);
+}
+
 /// <summary>
 /// Represents a HUD element that is bound to a GameEntity in the world.
 /// </summary>
-/// <typeparam name="TGameEntity"></typeparam>
-public abstract class HUDWorldElement<TGameEntity> : MonoBehaviour where TGameEntity : GameEntity
+/// <typeparam name="TWorldEntity"></typeparam>
+public abstract class HUDWorldElement<TWorldEntity> : MonoBehaviour, IHUDWorldElement where TWorldEntity : WorldEntity
 {
-    private GameEntityListener<TGameEntity> _entityListener;
-    private List<TGameEntity> _instances;
+    private WorldEntityListener<TWorldEntity> _entityListener;
+    private List<TWorldEntity> _instances;
 
-    protected virtual void Awake()
+    void IHUDWorldElement.Initialize(WorldEntityManager worldEntityManager)
     {
-        _instances = new List<TGameEntity>();
-        _entityListener = GameEntityManager.AddListener<TGameEntity>();
+        _instances = new List<TWorldEntity>();
+        _entityListener = worldEntityManager.AddListener<TWorldEntity>();
         _entityListener.OnSpawn(Element_Spawned);
         _entityListener.OnRemove(Element_Destroyed);
+        OnInitialize(worldEntityManager);
     }
 
-    private void Element_Spawned(TGameEntity element)
+    protected virtual void OnInitialize(WorldEntityManager worldEntityManager) { }
+
+    private void Element_Spawned(TWorldEntity element)
     {
         element.Destroyed += Element_Destroyed;
         _instances.Add(element);
         OnElementSpawned(element);
     }
 
-    private void Element_Destroyed(GameEntity gameEntity)
+    private void Element_Destroyed(WorldEntity gameEntity)
     {
-        OnElementDestroyed(gameEntity as TGameEntity);
-        _instances.Remove(gameEntity as TGameEntity);
+        OnElementDestroyed(gameEntity as TWorldEntity);
+        _instances.Remove(gameEntity as TWorldEntity);
     }
 
-    protected virtual void OnElementSpawned(TGameEntity element) { }
-    protected virtual void OnElementDestroyed(TGameEntity element) { }
+    protected virtual void OnElementSpawned(TWorldEntity element) { }
+    protected virtual void OnElementDestroyed(TWorldEntity element) { }
 
     protected virtual void OnDestroy()
     {

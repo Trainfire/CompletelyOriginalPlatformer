@@ -5,7 +5,6 @@ namespace Framework
     public abstract class Game : MonoBehaviour
     {
         private ConsoleController _console;
-        private GameEntityManager _gameEntityManager;
 
         private SceneLoader _sceneLoader;
         protected SceneLoader SceneLoader
@@ -67,11 +66,7 @@ namespace Framework
 
             // Zone
             _zoneManager = new ZoneManager<GameZone>(_sceneLoader);
-            _zoneManager.Listener.ZoneChanging += Listener_ZoneChanging;
             _zoneManager.Listener.ZoneChanged += Listener_ZoneChanged;
-
-            // Entity Manager
-            _gameEntityManager = new GameEntityManager(this);
 
             // Allows the control of the game, such as level loading, resuming and pausing the game.
             _controller = new GameController(this, _stateManager, _zoneManager);
@@ -85,21 +80,20 @@ namespace Framework
 
         protected virtual void OnInitialize(params string[] args) { }
 
-        private void Listener_ZoneChanging()
-        {
-            _gameEntityManager.Cleanup();
-        }
-
         private void Listener_ZoneChanged(GameZone gameZone)
         {
             _stateManager.SetState(State.Running);
 
-            var gameCamera = GameObject.FindObjectOfType<GameCamera>();
-            Camera = gameCamera;
-            if (Camera != null)
-                Camera.Initialize(this);
+            //var gameCamera = GameObject.FindObjectOfType<GameCamera>();
+            //Camera = gameCamera;
+            //if (Camera != null)
+            //    Camera.Initialize(this);
 
-            _gameEntityManager.LoadEntities();
+            foreach (var gameEntity in FindObjectsOfType<GameEntity>())
+            {
+                var gameInterface = gameEntity as IGameEntity;
+                gameInterface.Initialize(this);
+            }
         }
     }
 }

@@ -10,12 +10,12 @@ public struct TokenData
     public int Total { get; set; }
 }
 
-class TokenListener : GameEntity
+class TokenListener : WorldEntity
 {
     public UnityAction<TokenListener> AllCollected;
     public event Action<TokenData> TokensChanged;
 
-    private List<GameEntity> _tokens;
+    private List<WorldEntity> _tokens;
     private TokenData _tokenData;
 
     public TokenData TokenData
@@ -26,7 +26,7 @@ class TokenListener : GameEntity
     protected override void OnInitialize()
     {
         // Find all the tokens.
-        _tokens = new List<GameEntity>();
+        _tokens = new List<WorldEntity>();
         foreach (var token in FindObjectsOfType<Token>())
         {
             _tokens.Add(token);
