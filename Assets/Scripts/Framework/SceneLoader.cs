@@ -41,6 +41,10 @@ namespace Framework
 
             SceneManager.UnloadScene(LoadingScene);
 
+            // We're going to assume that the last scene is what we want to be active...
+            var activeScene = SceneManager.GetSceneByName(targetLoadScenes[targetLoadScenes.Length - 1]);
+            SceneManager.SetActiveScene(activeScene);
+
             onLoadComplete.InvokeSafe();
         }
     }
