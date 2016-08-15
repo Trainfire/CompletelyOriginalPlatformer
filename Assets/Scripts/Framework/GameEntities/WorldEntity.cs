@@ -9,7 +9,7 @@ namespace Framework
         void Initialize(World world, StateListener stateListener);
     }
 
-    public abstract class WorldEntity : MonoBehaviourEx, IWorldEntity, IInputHandler
+    public abstract class WorldEntity : MonoBehaviourEx, IWorldEntity
     {
         public event Action<IWorldEntity> Destroyed;
 
@@ -29,13 +29,10 @@ namespace Framework
             _stateListener = stateListener;
             _stateListener.StateChanged += OnStateChanged;
 
-            InputManager.RegisterHandler(this);
-
             OnInitialize();
         }
 
         protected virtual void OnInitialize() { }
-        protected virtual void HandleInput(InputActionEvent action) { }
         protected virtual void OnStateChanged(State state)
         {
             enabled = state == State.Running;
@@ -46,18 +43,11 @@ namespace Framework
         /// </summary>
         protected virtual void OnDestroy()
         {
-            InputManager.UnregisterHandler(this);
-
             if (_stateListener != null)
                 _stateListener.StateChanged -= OnStateChanged;
 
             if (Destroyed != null)
                 Destroyed(this);
-        }
-
-        void IInputHandler.HandleInput(InputActionEvent action)
-        {
-            HandleInput(action);
         }
     }
 }

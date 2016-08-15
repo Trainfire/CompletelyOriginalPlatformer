@@ -4,7 +4,7 @@ using Framework;
 using Framework.Components;
 using System;
 
-public class Player : WorldEntity
+public class Player : WorldEntity, IInputHandler
 {
     public bool InputEnabled { get; set; }
 
@@ -14,6 +14,8 @@ public class Player : WorldEntity
     protected override void OnInitialize()
     {
         base.OnInitialize();
+
+        InputManager.RegisterHandler(this);
 
         _playerController = GetComponent<PlayerController>();
         Assert.IsNotNull(_playerController, "PlayerController is missing! Make sure the player has a PlayerController attached.");
@@ -46,14 +48,14 @@ public class Player : WorldEntity
     {
         base.OnDestroy();
 
+        InputManager.UnregisterHandler(this);
+
         if (_playerController != null)
             _playerController.Landed -= PlayerController_Landed;
     }
 
-    protected override void HandleInput(InputActionEvent action)
+    void IInputHandler.HandleInput(InputActionEvent action)
     {
-        base.HandleInput(action);
-
         if (!InputEnabled)
             return;
 
