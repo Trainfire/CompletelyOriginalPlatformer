@@ -56,7 +56,7 @@ namespace Framework
         {
             if (_entities.Contains(worldEntity))
             {
-                Debug.LogErrorFormat("The world entity '{0}' has already been registered.", worldEntity.ID);
+                Debug.LogErrorFormat("The world entity '{0}' has already been registered.", worldEntity.GetHashCode());
             }
             else
             {
