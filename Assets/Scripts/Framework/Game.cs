@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections.Generic;
 
 namespace Framework
 {
@@ -74,6 +75,9 @@ namespace Framework
             // Audio
             Services.Provide(FindObjectOfType<AudioSystem>());
 
+            // Game Entities
+            new GameEntityManager(this);
+
             // Game implementation
             OnInitialize(args);
         }
@@ -83,16 +87,26 @@ namespace Framework
         private void Listener_ZoneChanged(GameZone gameZone)
         {
             _stateManager.SetState(State.Running);
+        }
+    }
 
-            //var gameCamera = GameObject.FindObjectOfType<GameCamera>();
-            //Camera = gameCamera;
-            //if (Camera != null)
-            //    Camera.Initialize(this);
+    class GameEntityManager
+    {
+        private Game _game;
+        private List<GameEntity> _entities;
 
-            foreach (var gameEntity in FindObjectsOfType<GameEntity>())
+        public GameEntityManager(Game game)
+        {
+            _game = game;
+            _game.ZoneListener.ZoneChanged += ZoneListener_ZoneChanged;
+        }
+
+        private void ZoneListener_ZoneChanged(GameZone gameZone)
+        {
+            foreach (var entity in InterfaceHelper.FindObjects<IGameEntity>())
             {
-                var gameInterface = gameEntity as IGameEntity;
-                gameInterface.Initialize(this);
+                if (!entity.Initialized)
+                    entity.Initialize(_game);
             }
         }
     }

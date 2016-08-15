@@ -7,10 +7,10 @@ namespace Framework
 {
     public class WorldEntityManager
     {
-        public event Action<WorldEntity> EntitySpawned;
-        public event Action<WorldEntity> EntityRemoved;
+        public event Action<IWorldEntity> EntitySpawned;
+        public event Action<IWorldEntity> EntityRemoved;
 
-        private List<WorldEntity> _entities;
+        private Dictionary<uint, IWorldEntity> _entities;
         private List<IWorldEntityListener> _listeners;
         private World _world;
         private StateListener _stateListener;
@@ -19,19 +19,23 @@ namespace Framework
         {
             _world = world;
             _stateListener = stateListener;
-            _entities = new List<WorldEntity>();
+            _entities = new Dictionary<uint, IWorldEntity>();
             _listeners = new List<IWorldEntityListener>();
         }
 
         public void RegisterAllEntities()
         {
-            // TODO: Get objects by IGameEntity instead of concrete class. Need to investigate how to do this.
-            foreach (var entity in GameObject.FindObjectsOfType<WorldEntity>())
+            // Register each entity first. We'll trigger the spawn event later.
+            foreach (var entity in InterfaceHelper.FindObjects<IWorldEntity>())
             {
-                Register(entity);
+                Register(entity, false);
             }
 
-            Debug.Log(_entities.Count);
+            // Trigger the spawn events now that we have all our entities registered.
+            foreach (var entity in _entities)
+            {
+                _listeners.ForEach(x => x.OnSpawn(entity.Value));
+            }
         }
 
         public void Cleanup()
@@ -43,37 +47,35 @@ namespace Framework
             // GameEntities will be destroyed on level load, so just unhook the event here.
             foreach (var entity in _entities.ToList())
             {
-                Unregister(entity);
-                _entities.Remove(entity);
+                Unregister(entity.Value);
+                _entities.Remove(entity.Key);
             }
         }
 
-        private void Register(WorldEntity worldEntity)
+        private void Register(IWorldEntity worldEntity, bool triggerSpawnEvent = true)
         {
-            if (_entities.Contains(worldEntity))
+            if (_entities.ContainsKey(worldEntity.ID))
             {
-                Debug.LogErrorFormat("The GameEntity '{0}' has already been registered.", worldEntity.name);
+                Debug.LogErrorFormat("The world entity '{0}' has already been registered.", worldEntity.ID);
             }
             else
             {
-                // Temp until I can just pass in the interface.
-                var worldEntityInterface = worldEntity as IWorldEntity;
-                worldEntityInterface.Initialize(_world, _stateListener);
-
+                worldEntity.Initialize(_world, _stateListener);
                 worldEntity.Destroyed += WorldEntity_Destroyed;
 
                 if (EntitySpawned != null)
                     EntitySpawned(worldEntity);
 
-                _listeners.ForEach(x => x.OnSpawn(worldEntity));
+                if (triggerSpawnEvent)
+                    _listeners.ForEach(x => x.OnSpawn(worldEntity));
 
-                _entities.Add(worldEntity);
+                _entities.Add(worldEntity.ID, worldEntity);
             }
         }
 
-        private void Unregister(WorldEntity worldEntity)
+        private void Unregister(IWorldEntity worldEntity)
         {
-            _entities.Remove(worldEntity);
+            _entities.Remove(worldEntity.ID);
             worldEntity.Destroyed -= WorldEntity_Destroyed;
 
             if (EntityRemoved != null)
@@ -82,9 +84,9 @@ namespace Framework
             _listeners.ForEach(x => x.OnRemove(worldEntity));
         }
 
-        private void WorldEntity_Destroyed(WorldEntity worldEntity)
+        private void WorldEntity_Destroyed(IWorldEntity worldEntity)
         {
-            if (!_entities.Contains(worldEntity))
+            if (!_entities.ContainsKey(worldEntity.ID))
             {
                 Debug.LogError("A GameEntity was destroyed but it was never registered.");
             }
@@ -103,11 +105,23 @@ namespace Framework
 
         public T Get<T>() where T : WorldEntity
         {
-            return _entities.FirstOrDefault(x => x.GetType() == typeof(T)) as T;
+            var entity = _entities
+                .Values
+                .FirstOrDefault(x => x.GetType() == typeof(T));
+
+            if (entity == null)
+            {
+                Debug.LogErrorFormat("Failed to find an Entity of type '{0}'", typeof(T));
+                return null;
+            }
+            else
+            {
+                return entity as T;
+            }
         }
 
         /// <summary>
-        /// Adds a listener which will callback when a GameEntity of the specified type is Spawned or Removed.
+        /// Adds a listener which will callback when a WorldEntity of the specified type is Spawned or Removed.
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>

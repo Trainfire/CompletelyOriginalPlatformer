@@ -13,7 +13,7 @@ namespace Framework
         void Update(GameCamera gameCamera);
     }
 
-    public class GameCamera : MonoBehaviour
+    public class GameCamera : WorldEntity
     {
         private Game _game;
         private IGameCameraController _controller;
@@ -27,18 +27,6 @@ namespace Framework
             Assert.IsNotNull(Camera);
 
             _screenEffects = new List<ScreenEffect>();
-        }
-
-        public void Initialize(Game game)
-        {
-            _game = game;
-            _game.StateListener.StateChanged += StateListener_StateChanged;
-        }
-
-        private void StateListener_StateChanged(State state)
-        {
-            // Stop updating if paused.
-            enabled = state == State.Running;
         }
 
         public void SetController(IGameCameraController controller)

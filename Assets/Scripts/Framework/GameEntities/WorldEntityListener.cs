@@ -4,8 +4,8 @@ namespace Framework
 {
     public interface IWorldEntityListener
     {
-        void OnSpawn(WorldEntity gameEntity);
-        void OnRemove(WorldEntity gameEntity);
+        void OnSpawn(IWorldEntity gameEntity);
+        void OnRemove(IWorldEntity gameEntity);
         void Destroy();
     }
 
@@ -24,19 +24,19 @@ namespace Framework
             _removed = onRemove;
         }
 
-        void IWorldEntityListener.OnSpawn(WorldEntity worldEntity)
+        void IWorldEntityListener.OnSpawn(IWorldEntity worldEntity)
         {
             if (MatchesType(worldEntity))
                 _spawned.InvokeSafe(worldEntity as T);
         }
 
-        void IWorldEntityListener.OnRemove(WorldEntity worldEntity)
+        void IWorldEntityListener.OnRemove(IWorldEntity worldEntity)
         {
             if (MatchesType(worldEntity))
                 _removed.InvokeSafe(worldEntity as T);
         }
 
-        bool MatchesType(WorldEntity worldEntity)
+        bool MatchesType(IWorldEntity worldEntity)
         {
             return worldEntity as T != null;
         }

@@ -5,10 +5,11 @@ namespace Framework
 {
     public interface IGameEntity
     {
+        bool Initialized { get; }
         void Initialize(Game game);
     }
 
-    public class GameEntity : MonoBehaviourEx, IGameEntity, IInputHandler
+    public abstract class GameEntity : MonoBehaviourEx, IGameEntity, IInputHandler
     {
         public event Action<GameEntity> Destroyed;
 
@@ -19,8 +20,16 @@ namespace Framework
             get { return GetInstanceID(); }
         }
 
+        private bool _initialized;
+        bool IGameEntity.Initialized
+        {
+            get { return _initialized; }
+        }
+
         void IGameEntity.Initialize(Game game)
         {
+            _initialized = true;
+
             Game = game;
             Game.StateListener.StateChanged += OnStateChanged;
 

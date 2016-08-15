@@ -4,20 +4,22 @@ namespace Framework
 {
     public interface IWorldEntity
     {
+        event Action<IWorldEntity> Destroyed;
+        uint ID { get; }
         void Initialize(World world, StateListener stateListener);
     }
 
-    public class WorldEntity : MonoBehaviourEx, IWorldEntity, IInputHandler
+    public abstract class WorldEntity : MonoBehaviourEx, IWorldEntity, IInputHandler
     {
-        public event Action<WorldEntity> Destroyed;
+        public event Action<IWorldEntity> Destroyed;
 
         private StateListener _stateListener;
 
         protected World World { get; private set; }
 
-        public int InstanceID
+        uint IWorldEntity.ID
         {
-            get { return GetInstanceID(); }
+            get { return (uint)GetInstanceID(); }
         }
 
         void IWorldEntity.Initialize(World world, StateListener stateListener)
@@ -34,7 +36,10 @@ namespace Framework
 
         protected virtual void OnInitialize() { }
         protected virtual void HandleInput(InputActionEvent action) { }
-        protected virtual void OnStateChanged(State state) { }
+        protected virtual void OnStateChanged(State state)
+        {
+            enabled = state == State.Running;
+        }
 
         /// <summary>
         /// Called when the GameObject is destroyed. If override, you must call the base method!

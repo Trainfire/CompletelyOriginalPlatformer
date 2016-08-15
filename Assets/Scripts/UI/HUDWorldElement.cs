@@ -34,7 +34,7 @@ public abstract class HUDWorldElement<TWorldEntity> : MonoBehaviour, IHUDWorldEl
         OnElementSpawned(element);
     }
 
-    private void Element_Destroyed(WorldEntity gameEntity)
+    private void Element_Destroyed(IWorldEntity gameEntity)
     {
         OnElementDestroyed(gameEntity as TWorldEntity);
         _instances.Remove(gameEntity as TWorldEntity);
