@@ -5,7 +5,6 @@ namespace Framework
     public interface IWorldEntity
     {
         event Action<IWorldEntity> Destroyed;
-        uint ID { get; }
         void Initialize(World world, StateListener stateListener);
     }
 
@@ -16,11 +15,6 @@ namespace Framework
         private StateListener _stateListener;
 
         protected World World { get; private set; }
-
-        uint IWorldEntity.ID
-        {
-            get { return (uint)GetInstanceID(); }
-        }
 
         void IWorldEntity.Initialize(World world, StateListener stateListener)
         {

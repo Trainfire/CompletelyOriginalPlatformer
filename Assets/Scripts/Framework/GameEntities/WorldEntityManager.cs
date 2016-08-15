@@ -10,7 +10,7 @@ namespace Framework
         public event Action<IWorldEntity> EntitySpawned;
         public event Action<IWorldEntity> EntityRemoved;
 
-        private Dictionary<uint, IWorldEntity> _entities;
+        private List<IWorldEntity> _entities;
         private List<IWorldEntityListener> _listeners;
         private World _world;
         private StateListener _stateListener;
@@ -19,7 +19,7 @@ namespace Framework
         {
             _world = world;
             _stateListener = stateListener;
-            _entities = new Dictionary<uint, IWorldEntity>();
+            _entities = new List<IWorldEntity>();
             _listeners = new List<IWorldEntityListener>();
         }
 
@@ -34,7 +34,7 @@ namespace Framework
             // Trigger the spawn events now that we have all our entities registered.
             foreach (var entity in _entities)
             {
-                _listeners.ForEach(x => x.OnSpawn(entity.Value));
+                _listeners.ForEach(x => x.OnSpawn(entity));
             }
         }
 
@@ -47,14 +47,14 @@ namespace Framework
             // GameEntities will be destroyed on level load, so just unhook the event here.
             foreach (var entity in _entities.ToList())
             {
-                Unregister(entity.Value);
-                _entities.Remove(entity.Key);
+                Unregister(entity);
+                _entities.Remove(entity);
             }
         }
 
         private void Register(IWorldEntity worldEntity, bool triggerSpawnEvent = true)
         {
-            if (_entities.ContainsKey(worldEntity.ID))
+            if (_entities.Contains(worldEntity))
             {
                 Debug.LogErrorFormat("The world entity '{0}' has already been registered.", worldEntity.ID);
             }
@@ -69,13 +69,13 @@ namespace Framework
                 if (triggerSpawnEvent)
                     _listeners.ForEach(x => x.OnSpawn(worldEntity));
 
-                _entities.Add(worldEntity.ID, worldEntity);
+                _entities.Add(worldEntity);
             }
         }
 
         private void Unregister(IWorldEntity worldEntity)
         {
-            _entities.Remove(worldEntity.ID);
+            _entities.Remove(worldEntity);
             worldEntity.Destroyed -= WorldEntity_Destroyed;
 
             if (EntityRemoved != null)
@@ -86,7 +86,7 @@ namespace Framework
 
         private void WorldEntity_Destroyed(IWorldEntity worldEntity)
         {
-            if (!_entities.ContainsKey(worldEntity.ID))
+            if (!_entities.Contains(worldEntity))
             {
                 Debug.LogError("A GameEntity was destroyed but it was never registered.");
             }
@@ -106,7 +106,6 @@ namespace Framework
         public T Get<T>() where T : WorldEntity
         {
             var entity = _entities
-                .Values
                 .FirstOrDefault(x => x.GetType() == typeof(T));
 
             if (entity == null)
