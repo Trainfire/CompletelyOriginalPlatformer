@@ -11,8 +11,6 @@ namespace Framework
 
     public abstract class GameEntity : MonoBehaviourEx, IGameEntity, IInputHandler
     {
-        public event Action<GameEntity> Destroyed;
-
         protected Game Game { get; private set; }
 
         public int InstanceID
@@ -48,9 +46,6 @@ namespace Framework
         protected virtual void OnDestroy()
         {
             InputManager.UnregisterHandler(this);
-
-            if (Destroyed != null)
-                Destroyed(this);
 
             if (Game != null)
                 Game.StateListener.StateChanged -= OnStateChanged;
