@@ -10,6 +10,7 @@ public class Player : WorldEntity, IInputHandler
 
     private PlayerController _playerController;
     private ScreenShake _landEffect;
+    private GameCamera _gameCamera;
 
     protected override void OnInitialize()
     {
@@ -19,6 +20,9 @@ public class Player : WorldEntity, IInputHandler
 
         _playerController = GetComponent<PlayerController>();
         Assert.IsNotNull(_playerController, "PlayerController is missing! Make sure the player has a PlayerController attached.");
+
+        _gameCamera = World.Entities.Get<GameCamera>();
+        Assert.IsNotNull(_gameCamera, "GameCamera is missing!");
 
         _playerController.Landed += PlayerController_Landed;
 
@@ -34,9 +38,13 @@ public class Player : WorldEntity, IInputHandler
 
     private void PlayerController_Landed(PlayerController.LandEventArgs landEvent)
     {
+        // I don't like this dependency, tbh...
+        if (_gameCamera == null)
+            return;
+
         if (Mathf.Abs(landEvent.Velocity) > 10f)
         {
-            _landEffect = World.Camera.AddScreenEffect<ScreenShake>();
+            _landEffect = _gameCamera.AddScreenEffect<ScreenShake>();
             _landEffect.Amplitude = Mathf.Abs(landEvent.Velocity) / 100f;
             _landEffect.Duration = 0.5f;
             _landEffect.Frequency = 0.01f;

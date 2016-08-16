@@ -25,13 +25,16 @@ namespace Framework
 
         public void RegisterAllEntities()
         {
-            // Register each entity first. We'll trigger the spawn event later.
+            // Register each entity first.
             foreach (var entity in InterfaceHelper.FindObjects<IWorldEntity>())
             {
                 Register(entity, false);
             }
 
-            // Trigger the spawn events now that we have all our entities registered.
+            // Now we'll initialize each entity.
+            _entities.ForEach(e => e.Initialize(_world, _stateListener));
+
+            // Finally, we'll trigger the spawn events now that we have all our entities registered.
             foreach (var entity in _entities)
             {
                 _listeners.ForEach(x => x.OnSpawn(entity));
@@ -52,7 +55,7 @@ namespace Framework
             }
         }
 
-        private void Register(IWorldEntity worldEntity, bool triggerSpawnEvent = true)
+        private void Register(IWorldEntity worldEntity, bool initialize = true)
         {
             if (_entities.Contains(worldEntity))
             {
@@ -60,13 +63,15 @@ namespace Framework
             }
             else
             {
-                worldEntity.Initialize(_world, _stateListener);
+                if (initialize)
+                    worldEntity.Initialize(_world, _stateListener);
+
                 worldEntity.Destroyed += WorldEntity_Destroyed;
 
                 if (EntitySpawned != null)
                     EntitySpawned(worldEntity);
 
-                if (triggerSpawnEvent)
+                if (initialize)
                     _listeners.ForEach(x => x.OnSpawn(worldEntity));
 
                 _entities.Add(worldEntity);
