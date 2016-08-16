@@ -61,6 +61,7 @@ namespace Framework
 
             // State
             _stateManager = new StateManager();
+            _stateManager.Listener.StateChanged += Listener_StateChanged;
 
             // Scene Loader
             _sceneLoader = gameObject.GetOrAddComponent<SceneLoader>();
@@ -83,6 +84,12 @@ namespace Framework
         }
 
         protected virtual void OnInitialize(params string[] args) { }
+
+        private void Listener_StateChanged(State state)
+        {
+            // Resume / Pause Game
+            Time.timeScale = state == State.Running ? 1f : 0f;
+        }
 
         private void Listener_ZoneChanged(GameZone gameZone)
         {
