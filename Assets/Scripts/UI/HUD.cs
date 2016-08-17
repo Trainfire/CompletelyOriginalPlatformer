@@ -5,6 +5,7 @@ using Framework;
 
 public class HUD : WorldEntity
 {
+    [SerializeField] private Canvas _canvas;
     [SerializeField] private HUDWorldPopups _hudPopups;
     [SerializeField] private HUDTokens _hudTokens;
     [SerializeField] private HUDInteractableAreas _hudInteractableArea;
@@ -13,10 +14,16 @@ public class HUD : WorldEntity
 
     protected override void OnInitialize()
     {
+        if (_canvas == null)
+        {
+            Debug.LogError("HUD must have a Canvas assigned.");
+            return;
+        }
+
         _hudElements = new List<IHUDWorldElement>();
         _hudElements.Add(_hudPopups);
         _hudElements.Add(_hudInteractableArea);
-        _hudElements.ForEach(x => x.Initialize(World.Entities));
+        _hudElements.ForEach(x => x.Initialize(_canvas, World.Entities));
 
         // Listen for the World to be spawned.
         var _worldListener = World.Entities.AddListener<TokenListener>();

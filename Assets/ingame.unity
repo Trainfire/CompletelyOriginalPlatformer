@@ -1500,6 +1500,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ad23c42f46190fc4884f70bfa69db661, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _canvas: {fileID: 488321588}
   _hudPopups: {fileID: 1576338794}
   _hudTokens: {fileID: 1306552496}
   _hudInteractableArea: {fileID: 1576338795}
@@ -1526,7 +1527,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5354eccd9eb90f94eb34ddfcbaa98daf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Prototype: {fileID: 1423990661}
+  _prototype: {fileID: 1423990661}
+  _offset: {x: 0, y: 5}
 --- !u!1 &1700216349
 GameObject:
   m_ObjectHideFlags: 0

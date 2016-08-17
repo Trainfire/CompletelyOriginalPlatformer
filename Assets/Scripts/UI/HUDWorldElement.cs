@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 public interface IHUDWorldElement
 {
-    void Initialize(WorldEntityManager worldEntityManager);
+    void Initialize(Canvas canvas, WorldEntityManager worldEntityManager);
 }
 
 /// <summary>
@@ -15,13 +15,19 @@ public abstract class HUDWorldElement<TWorldEntity> : MonoBehaviour, IHUDWorldEl
 {
     private WorldEntityListener<TWorldEntity> _entityListener;
     private List<TWorldEntity> _instances;
+    
+    protected Canvas Canvas { get; private set; }
 
-    void IHUDWorldElement.Initialize(WorldEntityManager worldEntityManager)
+    void IHUDWorldElement.Initialize(Canvas canvas, WorldEntityManager worldEntityManager)
     {
+        Canvas = canvas;
+
         _instances = new List<TWorldEntity>();
+
         _entityListener = worldEntityManager.AddListener<TWorldEntity>();
         _entityListener.OnSpawn(Element_Spawned);
         _entityListener.OnRemove(Element_Destroyed);
+
         OnInitialize(worldEntityManager);
     }
 

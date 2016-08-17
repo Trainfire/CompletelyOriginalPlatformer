@@ -125,5 +125,17 @@ namespace Framework
         {
             scrollRect.normalizedPosition = new Vector2(scrollRect.normalizedPosition.x, 0);
         }
+
+        public static Vector2 WorldToCanvasPoint(this Canvas canvas, Vector3 worldPosition)
+        {
+            var canvasRect = canvas.transform as RectTransform;
+
+            var viewportPoint = Camera.main.WorldToViewportPoint(worldPosition);
+
+            var screenX = (viewportPoint.x * canvasRect.sizeDelta.x) - (canvasRect.sizeDelta.x * 0.5f);
+            var screenY = (viewportPoint.y * canvasRect.sizeDelta.y) - (canvasRect.sizeDelta.y * 0.5f);
+
+            return new Vector2(screenX, screenY);
+        }
     }
 }
