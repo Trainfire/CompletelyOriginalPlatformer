@@ -19,6 +19,7 @@ public class MyGame : Game
         inputPC.AddBinding(InputMap.Right, KeyCode.D);
         inputPC.AddBinding(InputMap.Pause, KeyCode.Escape);
         inputPC.AddBinding(MyGameInputActions.Jump, KeyCode.Space);
+        inputPC.AddBinding(MyGameInputActions.Interact, KeyCode.E);
 
         // Register Map(s)
         InputManager.RegisterMap(inputPC);
@@ -38,4 +39,18 @@ public class MyGame : Game
 public class MyGameInputActions
 {
     public const string Jump = "Jump";
+    public const string Interact = "Interact";
+}
+
+public static class InputExtensions
+{
+    public static bool IsInteract(this InputActionEvent action)
+    {
+        return action.Action == MyGameInputActions.Interact && action.Type == InputActionType.Down;
+    }
+
+    public static bool IsHeldInteract(this InputActionEvent action)
+    {
+        return action.Action == MyGameInputActions.Interact && action.Type == InputActionType.Held;
+    }
 }

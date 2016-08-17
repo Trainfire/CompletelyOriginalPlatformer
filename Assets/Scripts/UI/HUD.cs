@@ -7,6 +7,7 @@ public class HUD : WorldEntity
 {
     [SerializeField] private HUDWorldPopups _hudPopups;
     [SerializeField] private HUDTokens _hudTokens;
+    [SerializeField] private HUDInteractableAreas _hudInteractableArea;
 
     private List<IHUDWorldElement> _hudElements;
 
@@ -14,6 +15,7 @@ public class HUD : WorldEntity
     {
         _hudElements = new List<IHUDWorldElement>();
         _hudElements.Add(_hudPopups);
+        _hudElements.Add(_hudInteractableArea);
         _hudElements.ForEach(x => x.Initialize(World.Entities));
 
         // Listen for the World to be spawned.
