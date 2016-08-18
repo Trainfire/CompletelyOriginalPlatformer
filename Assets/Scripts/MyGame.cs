@@ -54,3 +54,11 @@ public static class InputExtensions
         return action.Action == MyGameInputActions.Interact && action.Type == InputActionType.Held;
     }
 }
+
+public static class ColliderExtensions
+{
+    public static bool IsPlayer(this Collider2D collider)
+    {
+        return collider.tag == "Player";
+    }
+}

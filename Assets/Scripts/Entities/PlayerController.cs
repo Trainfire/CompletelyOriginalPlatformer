@@ -1,11 +1,11 @@
 using UnityEngine;
 using Framework;
-using System.Collections;
 using System;
 
 public class PlayerController : MonoBehaviour, IInputHandler
 {
     // TODO: Expose events here for the animator to hook into.
+    public event Action<PlayerController> Jumped;
     public event Action<LandEventArgs> Landed;
 
     public class LandEventArgs : EventArgs
@@ -23,7 +23,6 @@ public class PlayerController : MonoBehaviour, IInputHandler
     [SerializeField] private float _hMaxSpeed;
     [SerializeField] private float _vForce;
     [SerializeField] private LayerMask _worldMask;
-
     private Rigidbody2D _rigidBody;
     private Collider2D _collider;
 
@@ -133,6 +132,7 @@ public class PlayerController : MonoBehaviour, IInputHandler
     {
         if (_isGrounded)
         {
+            Jumped.InvokeSafe(this);
             _isGrounded = false;
             _rigidBody.AddForce(Vector2.up * _vForce);
         }

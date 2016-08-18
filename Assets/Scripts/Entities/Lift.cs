@@ -2,12 +2,14 @@ using UnityEngine;
 using Framework;
 using System.Collections.Generic;
 
+[RequireComponent(typeof(Rigidbody2D))]
 public class Lift : MonoBehaviour
 {
     [SerializeField] private Trigger _trigger;
     [SerializeField] private List<Transform> _points;
     [SerializeField] private float _moveSpeed;
 
+    private Rigidbody2D _rigidBody;
     private float _distanceTravelled;
     private float _targetDistance;
     private Vector3 _target;
@@ -30,6 +32,7 @@ public class Lift : MonoBehaviour
 
     private void Awake()
     {
+        _rigidBody = GetComponent<Rigidbody2D>();
         _trigger.Triggered += Move;
 
         if (_points == null)
@@ -70,13 +73,13 @@ public class Lift : MonoBehaviour
         }
     }
 
-    private void Update()
+    private void FixedUpdate()
     {
         if (_state == State.Idle)
             return;
 
         float moveSpeed = _moveSpeed * Time.deltaTime;
-        transform.position += _direction * moveSpeed;
+        _rigidBody.MovePosition(transform.position += _direction * moveSpeed);
         _distanceTravelled += moveSpeed;
 
         if (_distanceTravelled >= _targetDistance)

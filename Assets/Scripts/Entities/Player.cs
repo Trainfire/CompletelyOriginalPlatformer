@@ -6,11 +6,16 @@ using System;
 
 public class Player : WorldEntity, IInputHandler
 {
-    public bool InputEnabled { get; set; }
-
     private PlayerController _playerController;
     private ScreenShake _landEffect;
     private GameCamera _gameCamera;
+
+    public bool InputEnabled { get; set; }
+
+    public PlayerController Controller
+    {
+        get { return _playerController; }
+    }
 
     protected override void OnInitialize()
     {
