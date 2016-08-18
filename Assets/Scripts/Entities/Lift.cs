@@ -1,24 +1,25 @@
-﻿using UnityEngine;
+using UnityEngine;
 using Framework;
+using System.Collections.Generic;
 
 public class Lift : MonoBehaviour
 {
-    [SerializeField]
-    private Trigger _trigger;
-
-    [SerializeField]
-    private Transform _first;
-
-    [SerializeField]
-    private Transform _last;
-
-    [SerializeField]
-    private float _moveSpeed;
+    [SerializeField] private Trigger _trigger;
+    [SerializeField] private List<Transform> _points;
+    [SerializeField] private float _moveSpeed;
 
     private float _distanceTravelled;
     private float _targetDistance;
     private Vector3 _target;
     private Vector3 _direction;
+    private int _index;
+
+    private Orientation _orientation;
+    enum Orientation
+    {
+        Forwards,
+        Backwards,
+    }
 
     private State _state;
     enum State
@@ -27,35 +28,46 @@ public class Lift : MonoBehaviour
         Moving
     }
 
-    void Awake()
+    private void Awake()
     {
         _trigger.Triggered += Move;
+
+        if (_points == null)
+            _points = new List<Transform>();
+
+        if (_points.Count == 0)
+        {
+            Debug.LogWarning("Lift points contains no items.");
+        }
+        else
+        {
+            transform.position = _points[0].position;
+        }            
     }
 
     private void Move(Trigger trigger)
     {
-        if (_state == State.Moving)
+        if (_points.Count == 0)
         {
-            _direction = _direction == Vector3.up ? Vector3.down : Vector3.up;
-            _target = _direction == Vector3.up ? _last.position : _first.position;
+            Debug.LogWarning("Lift cannot move as no points are available.");
+            return;
+        }
+
+        if (transform.position == _points[0].position)
+        {
+            _orientation = Orientation.Forwards;
+            MoveNext();
+        }
+        else if (transform.position == _points[_points.Count - 1].position)
+        {
+            _orientation = Orientation.Backwards;
+            MoveNext();
         }
         else
         {
-            if (transform.position.y <= _first.position.y)
-            {
-                _target = _last.position;
-                _direction = Vector3.up;
-            }
-            else
-            {
-                _target = _first.position;
-                _direction = Vector3.down;
-            }
+            _orientation = _orientation == Orientation.Forwards ? Orientation.Backwards : Orientation.Forwards;
+            MoveNext();
         }
-
-        _distanceTravelled = 0f;
-        _targetDistance = Vector3.Distance(transform.position, _target);
-        _state = State.Moving;
     }
 
     private void Update()
@@ -68,6 +80,38 @@ public class Lift : MonoBehaviour
         _distanceTravelled += moveSpeed;
 
         if (_distanceTravelled >= _targetDistance)
-            _state = State.Idle;
+        {
+            transform.position = _target;
+            MoveNext();
+        }
+    }
+
+    private void MoveNext()
+    {
+        if (_orientation == Orientation.Forwards)
+        {
+            if (!_points.InRange(_index + 1))
+            {
+                _state = State.Idle;
+                return;
+            }
+            _index++;
+        }
+        else
+        {
+            if (!_points.InRange(_index - 1))
+            {
+                _state = State.Idle;
+                return;
+            }
+            _index--;
+        }
+
+        _target = _points[_index].position;
+        _direction = (_target - transform.position).normalized;
+        _targetDistance = Vector3.Distance(transform.position, _target);
+        _distanceTravelled = 0f;
+
+        _state = State.Moving;
     }
 }
