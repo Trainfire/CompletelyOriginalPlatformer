@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System;
 using Framework;
 
@@ -48,7 +48,6 @@ public class InteractableArea : WorldEntity, IInputHandler
     {
         if (_playerInArea && action.IsInteract())
         {
-            Debug.Log("Fire Trigger");
             _trigger.Fire();
         }
     }
