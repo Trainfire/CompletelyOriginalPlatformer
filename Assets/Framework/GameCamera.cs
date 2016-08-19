@@ -13,7 +13,7 @@ namespace Framework
         void Update(GameCamera gameCamera);
     }
 
-    public class GameCamera : WorldEntity
+    public class GameCamera : MonoBehaviour
     {
         private Game _game;
         private IGameCameraController _controller;

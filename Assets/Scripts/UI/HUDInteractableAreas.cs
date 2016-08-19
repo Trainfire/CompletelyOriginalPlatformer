@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using Framework;
 using Framework.UI;
+using System.Collections.Generic;
 
 public class HUDInteractableAreas : HUDWorldElement<InteractableArea>
 {
@@ -11,45 +12,33 @@ public class HUDInteractableAreas : HUDWorldElement<InteractableArea>
     private UIInteractPoint _instance;
     private RectTransform _instanceRect;
 
-    protected override void OnInitialize(WorldEntityManager worldEntityManager)
+    protected override void OnInitialize(List<InteractableArea> elements)
     {
-        base.OnInitialize(worldEntityManager);
+        base.OnInitialize(elements);
 
         _instance = UIUtility.Add<UIInteractPoint>(transform, _prototype.gameObject);
         _instance.gameObject.SetActive(false);
 
         // Cache this for later.
         _instanceRect = _instance.transform as RectTransform;
-    }
 
-    protected override void OnElementSpawned(InteractableArea element)
-    {
-        base.OnElementSpawned(element);
-
-        _element = element;
-
-        element.Entered += Element_TriggerEnter;
-        element.Left += Element_TriggerLeave;
-    }
-
-    protected override void OnElementDestroyed(InteractableArea element)
-    {
-        base.OnElementDestroyed(element);
-
-        _element = element;
-
-        element.Entered -= Element_TriggerEnter;
-        element.Left -= Element_TriggerLeave;
+        foreach (var element in Elements)
+        {
+            element.Entered += Element_TriggerEnter;
+            element.Left += Element_TriggerLeave;
+        }
     }
 
     private void Element_TriggerEnter(InteractableArea interactableArea)
     {
         _instance.Show(interactableArea.Message);
+        _element = interactableArea;
     }
 
     private void Element_TriggerLeave(InteractableArea interactableArea)
     {
         _instance.SetVisibility(false);
+        _element = null;
     }
 
     private void Update()

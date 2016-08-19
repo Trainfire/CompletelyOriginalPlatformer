@@ -6,6 +6,7 @@ namespace Framework
     public abstract class Game : MonoBehaviour
     {
         private ConsoleController _console;
+        private List<GameRule> _rules;
 
         private SceneLoader _sceneLoader;
         protected SceneLoader SceneLoader
@@ -85,6 +86,15 @@ namespace Framework
 
         protected virtual void OnInitialize(params string[] args) { }
 
+        protected virtual void RegisterRule<T>() where T : GameRule
+        {
+            if (_rules == null)
+                _rules = new List<GameRule>();
+
+            var rule = gameObject.GetOrAddComponent<T>();
+            _rules.Add(rule);
+        }
+
         private void Listener_StateChanged(State state)
         {
             // Resume / Pause Game
@@ -94,6 +104,11 @@ namespace Framework
         private void Listener_ZoneChanged(GameZone gameZone)
         {
             _stateManager.SetState(State.Running);
+
+            if (gameZone == GameZone.InGame)
+            {
+                _rules.ForEach(x => x.Initialize(_controller));
+            }
         }
     }
 

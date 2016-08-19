@@ -1,13 +1,13 @@
-﻿using Framework;
+﻿using UnityEngine;
+using Framework;
 
-class MyWorldRule : WorldRule
+class MyGameRule : GameRule
 {
     private TokenListener _tokenListener;
-    private GameController _gameController;
 
-    protected override void OnInitialize()
+    protected override void OnLevelStart()
     {
-        base.OnInitialize();
+        base.OnLevelStart();
 
         var player = FindObjectOfType<Player>();
 
@@ -16,11 +16,11 @@ class MyWorldRule : WorldRule
         trackingCamera.SetTarget(player.gameObject);
 
         // Set our camera's controller so it starts tracking the player.
-        var camera = EntityManager.Get<GameCamera>();
+        var camera = FindObjectOfType<GameCamera>();
         camera.SetController(trackingCamera);
 
         // Hook into the TokenListener's AllCollected event.
-        _tokenListener = EntityManager.Get<TokenListener>();
+        _tokenListener = FindObjectOfType<TokenListener>();
         if (_tokenListener != null)
             _tokenListener.AllCollected += TokenListener_AllCollected;
     }

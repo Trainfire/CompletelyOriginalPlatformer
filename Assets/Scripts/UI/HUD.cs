@@ -3,17 +3,20 @@ using System.Collections.Generic;
 using System.Linq;
 using Framework;
 
-public class HUD : WorldEntity
+public class HUD : GameEntity
 {
     [SerializeField] private Canvas _canvas;
     [SerializeField] private HUDWorldPopups _hudPopups;
     [SerializeField] private HUDTokens _hudTokens;
     [SerializeField] private HUDInteractableAreas _hudInteractableArea;
 
+    private TokenListener _tokenListener;
     private List<IHUDWorldElement> _hudElements;
 
     protected override void OnInitialize()
     {
+        base.OnInitialize();
+
         if (_canvas == null)
         {
             Debug.LogError("HUD must have a Canvas assigned.");
@@ -23,25 +26,14 @@ public class HUD : WorldEntity
         _hudElements = new List<IHUDWorldElement>();
         _hudElements.Add(_hudPopups);
         _hudElements.Add(_hudInteractableArea);
-        _hudElements.ForEach(x => x.Initialize(_canvas, World.Entities));
+        _hudElements.ForEach(x => x.Initialize(_canvas));
 
         // Listen for the World to be spawned.
-        var _worldListener = World.Entities.AddListener<TokenListener>();
-        _worldListener.OnSpawn(TokenListener_Spawned);
-        _worldListener.OnRemove(TokenListener_Removed);
-    }
-
-    private void TokenListener_Removed(TokenListener obj)
-    {
-        obj.TokensChanged -= UpdateTokenHUD;
-    }
-
-    private void TokenListener_Spawned(TokenListener world)
-    {
-        world.TokensChanged += UpdateTokenHUD;
+        _tokenListener = FindObjectOfType<TokenListener>();
+        _tokenListener.TokensChanged += UpdateTokenHUD;
 
         // Get existing Token Data.
-        UpdateTokenHUD(world.TokenData);
+        UpdateTokenHUD(_tokenListener.TokenData);
     }
 
     private void UpdateTokenHUD(TokenData tokenData)
@@ -60,6 +52,7 @@ public class HUD : WorldEntity
     protected override void OnDestroy()
     {
         base.OnDestroy();
+
         _hudElements.Clear();
     }
 }

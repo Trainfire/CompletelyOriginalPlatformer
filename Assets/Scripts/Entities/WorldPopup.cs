@@ -2,7 +2,7 @@ using UnityEngine;
 using System;
 using Framework;
 
-public class WorldPopup : WorldEntity
+public class WorldPopup : MonoBehaviour
 {
     public event Action<WorldPopup> TriggerEnter;
     public event Action<WorldPopup> TriggerLeave;
@@ -11,7 +11,7 @@ public class WorldPopup : WorldEntity
 
     private BoxCollider2D _trigger;
 
-    protected override void OnInitialize()
+    private void Start()
     {
         _trigger = GetComponent<BoxCollider2D>();
     }

@@ -4,8 +4,9 @@ using Framework;
 using Framework.Components;
 using System;
 
-public class Player : WorldEntity, IInputHandler
+public class Player : MonoBehaviour, IInputHandler
 {
+    private StateListener _stateListener;
     private PlayerController _playerController;
     private ScreenShake _landEffect;
     private GameCamera _gameCamera;
@@ -17,16 +18,20 @@ public class Player : WorldEntity, IInputHandler
         get { return _playerController; }
     }
 
-    protected override void OnInitialize()
+    public void Initialize(StateListener stateListener)
     {
-        base.OnInitialize();
+        _stateListener = stateListener;
+        _stateListener.StateChanged += OnStateChanged;
+    }
 
+    private void Start()
+    {
         InputManager.RegisterHandler(this);
 
         _playerController = GetComponent<PlayerController>();
         Assert.IsNotNull(_playerController, "PlayerController is missing! Make sure the player has a PlayerController attached.");
 
-        _gameCamera = World.Entities.Get<GameCamera>();
+        _gameCamera = FindObjectOfType<GameCamera>();
         Assert.IsNotNull(_gameCamera, "GameCamera is missing!");
 
         _playerController.Landed += PlayerController_Landed;
@@ -34,9 +39,8 @@ public class Player : WorldEntity, IInputHandler
         InputEnabled = true;
     }
 
-    protected override void OnStateChanged(State state)
+    private void OnStateChanged(State state)
     {
-        base.OnStateChanged(state);
         InputEnabled = state == State.Running;
         _playerController.enabled = state == State.Running;
     }
@@ -57,10 +61,8 @@ public class Player : WorldEntity, IInputHandler
         }
     }
 
-    protected override void OnDestroy()
+    private void OnDestroy()
     {
-        base.OnDestroy();
-
         InputManager.UnregisterHandler(this);
 
         if (_playerController != null)

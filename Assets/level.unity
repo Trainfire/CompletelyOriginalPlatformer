@@ -1826,8 +1826,6 @@ GameObject:
   m_Component:
   - 4: {fileID: 1069815114}
   - 114: {fileID: 1069815116}
-  - 114: {fileID: 1069815117}
-  - 114: {fileID: 1069815115}
   m_Layer: 0
   m_Name: World
   m_TagString: Untagged
@@ -1857,17 +1855,6 @@ Transform:
   - {fileID: 178264491}
   m_Father: {fileID: 0}
   m_RootOrder: 0
---- !u!114 &1069815115
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 1069815113}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f97ec59092ff8b44fa1a13992eb2c109, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &1069815116
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1877,17 +1864,6 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 352fdb6b0377ccf48bce43ac3e878bc6, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &1069815117
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 1069815113}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1ffafeb3d08543a48818e1c29e75b066, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!4 &1082732523 stripped

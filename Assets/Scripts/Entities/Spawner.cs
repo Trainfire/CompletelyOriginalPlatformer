@@ -3,31 +3,29 @@ using Framework;
 using System;
 using System.Collections;
 
-public class Spawner : WorldEntity
+public class Spawner : MonoBehaviour
 {
     [SerializeField]
-    private WorldEntity _prototype;
+    private MonoBehaviour _prototype;
 
     [SerializeField]
     private float _delay;
 
-    protected override void OnInitialize()
+    private void Start()
     {
-        base.OnInitialize();
         StartCoroutine(Spawn());
     }
 
     IEnumerator Spawn()
     {
         yield return new WaitForSeconds(_delay);
-        var instance = World.Entities.Spawn(_prototype);
+        var instance = Instantiate(_prototype);
         instance.transform.position = transform.position;
         yield return StartCoroutine(Spawn());
     }
 
-    protected override void OnDestroy()
+    private void OnDestroy()
     {
-        base.OnDestroy();
         StopAllCoroutines();
     }
 }

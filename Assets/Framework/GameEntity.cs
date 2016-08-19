@@ -1,6 +1,3 @@
-using UnityEngine;
-using System;
-
 namespace Framework
 {
     public interface IGameEntity
@@ -9,6 +6,9 @@ namespace Framework
         void Initialize(Game game);
     }
 
+    /// <summary>
+    /// Represents a class dependant on the Game. The Initialize method is called after MonoBehaviour's Start.
+    /// </summary>
     public abstract class GameEntity : MonoBehaviourEx, IGameEntity, IInputHandler
     {
         protected Game Game { get; private set; }

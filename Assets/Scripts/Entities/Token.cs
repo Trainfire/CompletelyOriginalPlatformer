@@ -3,7 +3,7 @@ using System;
 using System.Collections;
 using Framework;
 
-public class Token : WorldEntity
+public class Token : MonoBehaviour
 {
     public event Action<Token> Collected;
 

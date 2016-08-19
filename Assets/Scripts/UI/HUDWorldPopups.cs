@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Framework;
 using Framework.UI;
 
@@ -8,25 +9,18 @@ public class HUDWorldPopups : HUDWorldElement<WorldPopup>
 
     private UIWorldPopup _popupInstance;
 
-    protected override void OnInitialize(WorldEntityManager worldEntityManager)
+    protected override void OnInitialize(List<WorldPopup> elements)
     {
-        base.OnInitialize(worldEntityManager);
+        base.OnInitialize(elements);
+
         _popupInstance = UIUtility.Add<UIWorldPopup>(transform, Prototype.gameObject);
         _popupInstance.gameObject.SetActive(false);
-    }
 
-    protected override void OnElementSpawned(WorldPopup element)
-    {
-        base.OnElementSpawned(element);
-        element.TriggerEnter += Element_TriggerEnter;
-        element.TriggerLeave += Element_TriggerLeave;
-    }
-
-    protected override void OnElementDestroyed(WorldPopup element)
-    {
-        base.OnElementDestroyed(element);
-        element.TriggerEnter -= Element_TriggerEnter;
-        element.TriggerLeave -= Element_TriggerLeave;
+        foreach (var element in elements)
+        {
+            element.TriggerEnter += Element_TriggerEnter;
+            element.TriggerLeave += Element_TriggerLeave;
+        }
     }
 
     private void Element_TriggerEnter(WorldPopup worldPopup)
@@ -39,5 +33,14 @@ public class HUDWorldPopups : HUDWorldElement<WorldPopup>
     {
         _popupInstance.Content = string.Empty;
         _popupInstance.SetVisibility(false);
+    }
+
+    private void OnDestroy()
+    {
+        foreach (var element in Elements)
+        {
+            element.TriggerEnter -= Element_TriggerEnter;
+            element.TriggerLeave -= Element_TriggerLeave;
+        }
     }
 }

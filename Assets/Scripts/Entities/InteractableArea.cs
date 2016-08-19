@@ -2,7 +2,7 @@ using UnityEngine;
 using System;
 using Framework;
 
-public class InteractableArea : WorldEntity, IInputHandler
+public class InteractableArea : MonoBehaviour, IInputHandler
 {
     public event Action<InteractableArea> Entered;
     public event Action<InteractableArea> Left;
@@ -18,7 +18,7 @@ public class InteractableArea : WorldEntity, IInputHandler
         get { return _message; }
     }
 
-    private void Awake()
+    private void Start()
     {
         InputManager.RegisterHandler(this);
 
@@ -52,10 +52,8 @@ public class InteractableArea : WorldEntity, IInputHandler
         }
     }
 
-    protected override void OnDestroy()
+    private void OnDestroy()
     {
-        base.OnDestroy();
-
         InputManager.UnregisterHandler(this);
 
         _triggerArea.Entered -= OnTriggerEntered;

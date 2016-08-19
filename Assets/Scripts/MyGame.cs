@@ -24,6 +24,9 @@ public class MyGame : Game
         // Register Map(s)
         InputManager.RegisterMap(inputPC);
 
+        // Add Game Rule
+        RegisterRule<MyGameRule>();
+
         // Determines where to go first.
         if (args != null && args.Length != 0)
         {

@@ -10,12 +10,12 @@ public struct TokenData
     public int Total { get; set; }
 }
 
-class TokenListener : WorldEntity
+class TokenListener : MonoBehaviour
 {
     public UnityAction<TokenListener> AllCollected;
     public event Action<TokenData> TokensChanged;
 
-    private List<WorldEntity> _tokens;
+    private List<Token> _tokens;
     private TokenData _tokenData;
 
     public TokenData TokenData
@@ -23,10 +23,10 @@ class TokenListener : WorldEntity
         get { return _tokenData; }
     }
 
-    protected override void OnInitialize()
+    private void Start()
     {
         // Find all the tokens.
-        _tokens = new List<WorldEntity>();
+        _tokens = new List<Token>();
         foreach (var token in FindObjectsOfType<Token>())
         {
             _tokens.Add(token);

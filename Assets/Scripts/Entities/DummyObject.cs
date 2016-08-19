@@ -1,3 +1,3 @@
-﻿using Framework;
+﻿using UnityEngine;
 
-public class DummyObject : WorldEntity { }
+public class DummyObject : MonoBehaviour { }
